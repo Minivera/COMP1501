@@ -43,7 +43,7 @@ class Emote(pygame.sprite.Sprite):
         self.scale = scale
         self.position = position
         self.initial_position = position
-        self.image = ""
+        self.image = None
         self.rect = ()
         self.set_image()
 
