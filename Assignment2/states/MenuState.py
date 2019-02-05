@@ -19,36 +19,36 @@ class MenuState(State):
                 "name": "Start",
                 "label": "start",
                 "position": (512, 200),
-                "instance": 0,
+                "instance": None,
                 "is_clicked": False,
             },
             {
                 "name": "Instructions",
                 "label": "tutorial",
                 "position": (512, 250),
-                "instance": 0,
+                "instance": None,
                 "is_clicked": False,
             },
             {
                 "name": "Quit Game",
                 "label": "exit",
                 "position": (512, 300),
-                "instance": 0,
+                "instance": None,
                 "is_clicked": False,
             },
         ]
         self.scenarios = [
             {
                 "entities": [
-                    Unit("thief", "", 1, (0, 0), 1, (1034, 512)),
-                    Unit("orc", "", 1, (0, 0), 1, (1100, 512)),
+                    Unit("thief", "", 1, 50, (1034, 512), (0, 0)),
+                    Unit("orc", "", 1, 50, (1034, 512), (1, 0)),
                 ],
                 "direction": (-50, 512),
             },
             {
                 "entities": [
-                    Unit("knight", "", 0, (0, 0), 1, (-100, 512)),
-                    Unit("goblin", "", 0, (0, 0), 1, (-50, 512)),
+                    Unit("knight", "", 0, 50, (-50, 512), (1, 0)),
+                    Unit("goblin", "", 0, 50, (-50, 512), (0, 0)),
                 ],
                 "direction": (1034, 512),
             }
@@ -103,7 +103,6 @@ class MenuState(State):
 
         for unit in self.current_scenario["entities"]:
             sprites.add(unit.entity)
-            sprites.add(unit.emote_entity)
         return
 
     def update(self, game_instance):
