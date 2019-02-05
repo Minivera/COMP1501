@@ -50,9 +50,9 @@ class TutorialState(State):
                 "text": 0,
                 "description_entities": [],
                 "entities": [
-                    Unit("thief", False, 1, (0, 0), 1, (420, 400)),
-                    Unit("wizard", "angry", 1, (0, 0), 1, (460, 400)),
-                    Unit("knight", False, 1, (0, 0), 1, (500, 400)),
+                    Unit("thief", False, 1, 50, (420, 400), (0, 0)),
+                    Unit("wizard", "angry", 1, 50, (460, 400), (1, 0)),
+                    Unit("knight", False, 1, 50, (500, 400), (2, 0)),
                 ],
                 "buttons": []
             }
@@ -125,7 +125,6 @@ class TutorialState(State):
 
         for unit in tutorial["entities"]:
             sprites.add(unit.entity)
-            sprites.add(unit.emote_entity)
 
         for entity in tutorial["buttons"]:
             sprites.add(entity["instance"])
