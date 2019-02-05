@@ -15,7 +15,7 @@ class Animated(pygame.sprite.Sprite):
         self.position = position
         self.initial_position = position
         self.orientation = orientation
-        self.image = ""
+        self.image = None
         self.rect = ()
         self.set_image()
 
@@ -54,6 +54,7 @@ class Animated(pygame.sprite.Sprite):
 
     def reset_position(self):
         self.position = self.initial_position
+        self.set_image()
 
     def determine_image(self):
         return "{}_{}_anim_f{}.png".format(self.unit_type, self.state, self.frame // animation_lag)
