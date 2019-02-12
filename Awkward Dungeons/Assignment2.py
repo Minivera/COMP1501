@@ -1,9 +1,9 @@
 import sys
 import pygame
-from Game import Game
+from game.Game import Game
 
-screen_width = 500
-screen_height = 900
+screen_width = 1024
+screen_height = 768
 frame_rate = 60
 
 
