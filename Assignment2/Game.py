@@ -2,34 +2,55 @@ import pygame
 import random
 from entities.Ball import Ball
 from entities.Grog import Grog
+from entities.Colours import possible_colours, next_color
 
 
 class Game:
-    number_of_starting_balls = 10
-
     max_number_of_balls = 15
 
     size_steps = [0.40, 0.50, 0.60, 0.80, 1]
+
+    base_score = 2000
 
     def __init__(self, screen_size):
         self.is_running = False
         self.screen_size = screen_size
         self.screen = pygame.display.set_mode(screen_size)
         self.balls = []
-        self.balls_count = self.number_of_starting_balls
         self.grog = Grog((screen_size[0], 200), (0, 0))
+        self.grog.determine_meal()
         self.target = None
-        pygame.init()
-        pygame.display.set_caption('Grog')
-        pygame.display.flip()
-        pygame.key.set_repeat(1, 1)
+        self.clicks_this_round = 0
+        self.score = 0
+        self.round_finished = False
         self.generate_field()
 
     def generate_field(self):
-        for i in range(1, self.balls_count):
+        for demand in self.grog.requests:
+            current = random.randint(1, max(1, demand["quantity"] // 2))
+            count = 0
+            while count < demand["quantity"]:
+                count += current
+                self.balls.append(
+                    Ball(
+                        demand["color"],
+                        current,
+                        0,
+                        (
+                            random.randint(Ball.base_radius, self.screen_size[0] - Ball.base_radius),
+                            random.randint(Ball.base_radius + 200, self.screen_size[1] - Ball.base_radius),
+                        ),
+                    )
+                )
+                current = random.randint(1, max(1, demand["quantity"] - count))
+        return
+
+    def add_balls(self):
+        count = random.randint(len(self.balls) - 1, self.max_number_of_balls)
+        for i in range (1, count):
             self.balls.append(
                 Ball(
-                    Ball.possible_colours[random.randint(0, len(Ball.possible_colours) - 1)],
+                    possible_colours[random.randint(0, len(possible_colours) - 1)],
                     random.randint(1, 3),
                     0,
                     (
@@ -38,7 +59,6 @@ class Game:
                     ),
                 )
             )
-        return
 
     def start(self):
         self.is_running = True
@@ -68,19 +88,25 @@ class Game:
                 if mouse_click_pos[0]:
                     if ((ball.position[0] - mouse_pos[0]) ** 2 + (ball.position[1] - mouse_pos[1]) ** 2) \
                             < (ball.current_radius ** 2):
-                        self.target = ball
+                        ball.colour = next_color(ball.colour)
+                        self.clicks_this_round += 1
 
                 # Check if ball was clicked with right click
                 if mouse_click_pos[2]:
                     if ((ball.position[0] - mouse_pos[0]) ** 2 + (ball.position[1] - mouse_pos[1]) ** 2) \
                             < (ball.current_radius ** 2):
-                        ball.colour = ball.colour
+                        self.target = ball
+                        self.clicks_this_round += 1
 
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 self.end_game()
                 return
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    self.add_balls()
         return
 
     def render(self, sprites):
@@ -88,6 +114,8 @@ class Game:
         self.screen.fill((0, 0, 0))
 
         for ball in self.balls:
+            if not ball.exists:
+                continue
             sprites.add(ball)
 
         sprites.add(self.grog)
@@ -97,8 +125,8 @@ class Game:
     def update(self):
         if self.target is not None:
             for ball in self.balls:
-                # Ignore the target or any ball not of the right type
-                if ball == self.target or ball.colour != self.target.colour:
+                # Ignore the target or any ball not of the right type, but don't if the target is grog
+                if not isinstance(self.target, Grog) and (ball == self.target or ball.colour != self.target.colour):
                     continue
 
                 ball.seek_to(self.target)
@@ -115,7 +143,14 @@ class Game:
                 current_highest = max(current_highest, ball.number)
                 continue
 
-            # Check if the ball collides with the target
+            # ignore the rest if grog is the target
+            if self.target is not None and isinstance(self.target, Grog):
+                # Check if the ball collides with Grog
+                if pygame.Rect(self.target.rect).contains(pygame.Rect(ball.rect)):
+                    ball.exists = False
+                continue
+
+            # Check if the ball collides with the ball target
             if self.target is not None and ball.collides_with(self.target):
                 self.target.number = self.target.number + ball.number
                 ball.exists = False
@@ -151,7 +186,10 @@ class Game:
                 ball.update()
                 continue
 
-            ball.scale = self.size_steps[self.__get_scale(ball.number, current_highest)]
+            # Check if at least a ball existed, if not, keep the last scale
+            if current_highest > 0:
+                ball.scale = self.size_steps[self.__get_scale(ball.number, current_highest)]
+
             ball.update()
         return
 
@@ -178,6 +216,13 @@ class Game:
 
         if ready:
             self.target = None
+            if self.grog.demands_met(self.balls):
+                self.round_finished = True
+                self.target = self.grog
+
+            if self.round_finished:
+                self.generate_field()
+                self.clicks_this_round = 0
         return
 
     def end_game(self):

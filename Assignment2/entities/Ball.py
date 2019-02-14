@@ -1,18 +1,9 @@
 import pygame
 from pygame import gfxdraw
+from entities.Colours import colours
 
 
 class Ball(pygame.sprite.Sprite):
-    colours = {
-        "red": (196, 0, 0),
-        "yellow": (202, 211, 19),
-        "green": (38, 181, 36),
-        "white": (255, 255, 255),
-        "black": (0, 0, 0),
-    }
-
-    possible_colours = ["red", "yellow", "green"]
-
     base_radius = 40
 
     surface_size = 100
@@ -27,7 +18,8 @@ class Ball(pygame.sprite.Sprite):
 
     def __init__(self, colour, number, scale, position):
         pygame.sprite.Sprite.__init__(self)
-        self.colour = self.colours[colour]
+        self.main_font = pygame.font.Font("assets/monogram.ttf", self.font_size)
+        self.colour = colours[colour]
         self.number = number
         self.scale = scale
         self.position = position
@@ -68,22 +60,21 @@ class Ball(pygame.sprite.Sprite):
                 self.surface_size // 2,
                 self.surface_size // 2,
                 self.current_radius - 1,
-                self.colours["white"],
+                colours["white"],
             )
             gfxdraw.aacircle(
                 self.image,
                 self.surface_size // 2,
                 self.surface_size // 2,
                 self.current_radius,
-                self.colours["white"],
+                colours["white"],
             )
 
         # Render the text
-        main_font = pygame.font.Font("assets/monogram.ttf", self.font_size)
-        text = main_font.render(
+        text = self.main_font.render(
             str(self.number),
             1,
-            self.colours["white"] if self.colour != self.colours["yellow"] else self.colours["black"]
+            colours["white"] if self.colour != colours["yellow"] else colours["black"]
         )
         text_rect = text.get_rect()
         self.image.blit(text, (self.surface_size // 2 - text_rect[2] // 2, self.surface_size // 2 - text_rect[3] // 2))
@@ -95,20 +86,28 @@ class Ball(pygame.sprite.Sprite):
         self.rect.center = self.position
 
     def change_color(self, colour):
-        self.colour = self.colours[colour]
+        self.colour = colours[colour]
         self.set_image()
 
     def seek_to(self, target):
-        # Check if currently at the same position
-        if self.collides_with(target):
+        target_pos = target.position
+        # Check if currently at the same position of the ball target
+        if isinstance(target, Ball) and self.collides_with(target):
             self.velocity = (0, 0)
             self.moving = False
+        elif not isinstance(target, Ball) and pygame.Rect(target.rect).contains(pygame.Rect(self.rect)):
+            # if the target is not a ball, but we still collide with it
+            self.velocity = (0, 0)
+            self.moving = False
+        elif not isinstance(target, Ball):
+            # otherwise, if the target is not a ball, set the target position to the center
+            target_pos = target.image.get_rect().center
 
         # If not, move the ball towards the current position of the target
-        steps_number = max(abs(target.position[0] - self.position[0]), abs(target.position[1] - self.position[1]))
+        steps_number = max(abs(target_pos[0] - self.position[0]), abs(target_pos[1] - self.position[1]))
 
-        dx = float(target.position[0] - self.position[0]) / steps_number
-        dy = float(target.position[1] - self.position[1]) / steps_number
+        dx = float(target_pos[0] - self.position[0]) / steps_number
+        dy = float(target_pos[1] - self.position[1]) / steps_number
         self.velocity = (dx * self.speed_boost, dy * self.speed_boost)
         self.moving = dx != 0 or dy != 0
 

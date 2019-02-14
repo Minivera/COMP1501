@@ -8,7 +8,10 @@ frame_rate = 60
 
 
 def main():
+    pygame.init()
     clock = pygame.time.Clock()
+    pygame.display.set_caption('Grog')
+    pygame.key.set_repeat(1, 1)
 
     game_instance = Game((screen_width, screen_height))
     game_instance.start()
@@ -26,6 +29,7 @@ def main():
 
         # Update display
         pygame.display.update()
+        pygame.display.flip()
 
         # Make sure we keep a consistent framerate
         clock.tick(frame_rate)
