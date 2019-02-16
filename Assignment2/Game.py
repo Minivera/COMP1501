@@ -2,7 +2,16 @@ import pygame
 import random
 from entities.Ball import Ball
 from entities.Grog import Grog
+from entities.ScoreBoard import ScoreBoard
+from entities.Menu import Menu
 from entities.Colours import possible_colours, next_color
+
+STATE_NONE = -1
+STATE_MENU = 0
+STATE_GAME = 1
+
+BUTTON_LEFT = 1
+BUTTON_RIGHT = 3
 
 
 class Game:
@@ -12,18 +21,22 @@ class Game:
 
     base_score = 2000
 
+    score_loss = 100
+
     def __init__(self, screen_size):
         self.is_running = False
+        self.state = STATE_NONE
         self.screen_size = screen_size
         self.screen = pygame.display.set_mode(screen_size)
         self.balls = []
-        self.grog = Grog((screen_size[0], 200), (0, 0))
-        self.grog.determine_meal()
-        self.target = None
         self.clicks_this_round = 0
         self.score = 0
         self.round_finished = False
-        self.generate_field()
+        self.grog = Grog((screen_size[0], 200), (0, 0))
+        self.score_board = ScoreBoard(self.score, (screen_size[0], 30), (0, screen_size[1] - 30))
+        self.menu = Menu(screen_size, (0, 0))
+        self.grog.determine_meal()
+        self.target = None
 
     def generate_field(self):
         for demand in self.grog.requests:
@@ -38,7 +51,7 @@ class Game:
                         0,
                         (
                             random.randint(Ball.base_radius, self.screen_size[0] - Ball.base_radius),
-                            random.randint(Ball.base_radius + 200, self.screen_size[1] - Ball.base_radius),
+                            random.randint(Ball.base_radius + 200, self.screen_size[1] - Ball.base_radius - 30),
                         ),
                     )
                 )
@@ -61,18 +74,34 @@ class Game:
             )
 
     def start(self):
+        self.state = STATE_MENU
         self.is_running = True
 
     def handle_input(self):
+        # handle game input
+        mouse_pos = pygame.mouse.get_pos()
+
+        events = pygame.event.get()
+        if self.state == STATE_MENU:
+            # Only the events for the menu
+            for event in events:
+                if event.type == pygame.QUIT:
+                    self.end_game()
+                    return
+
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == BUTTON_LEFT and\
+                            pygame.Rect(self.menu.button_rect).collidepoint(mouse_pos[0], mouse_pos[1]):
+                        self.state = STATE_GAME
+                        self.generate_field()
+            return
+
+        # Now manage the game if not is menu state
         ready = True
         for ball in self.balls:
             if ball.moving or ball.resizing:
                 ready = False
                 break
-
-        # handle game input
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_click_pos = pygame.mouse.get_pressed()
 
         self.grog.change_mouse_pos(mouse_pos)
 
@@ -84,45 +113,54 @@ class Game:
                         < (ball.current_radius ** 2):
                     ball.focused = True
 
-                # Check if ball was clicked with left click
-                if mouse_click_pos[0]:
-                    if ((ball.position[0] - mouse_pos[0]) ** 2 + (ball.position[1] - mouse_pos[1]) ** 2) \
-                            < (ball.current_radius ** 2):
-                        ball.colour = next_color(ball.colour)
-                        self.clicks_this_round += 1
-
-                # Check if ball was clicked with right click
-                if mouse_click_pos[2]:
-                    if ((ball.position[0] - mouse_pos[0]) ** 2 + (ball.position[1] - mouse_pos[1]) ** 2) \
-                            < (ball.current_radius ** 2):
-                        self.target = ball
-                        self.clicks_this_round += 1
-
-        events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 self.end_game()
                 return
 
-            if event.type == pygame.KEYDOWN:
+            if ready and event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_r:
                     self.add_balls()
+                    self.clicks_this_round += 5
+                    continue
+
+            if ready and event.type == pygame.MOUSEBUTTONUP:
+                for ball in self.balls:
+                    if event.button == BUTTON_LEFT:
+                        if ((ball.position[0] - mouse_pos[0]) ** 2 + (ball.position[1] - mouse_pos[1]) ** 2) \
+                                < (ball.current_radius ** 2):
+                            ball.colour = next_color(ball.colour)
+                            self.clicks_this_round += 1
+
+                    if event.button == BUTTON_RIGHT:
+                        if ((ball.position[0] - mouse_pos[0]) ** 2 + (ball.position[1] - mouse_pos[1]) ** 2) \
+                                < (ball.current_radius ** 2):
+                            self.target = ball
+                            self.clicks_this_round += 1
         return
 
     def render(self, sprites):
         # render stuff
         self.screen.fill((0, 0, 0))
 
-        for ball in self.balls:
-            if not ball.exists:
-                continue
-            sprites.add(ball)
+        if self.state == STATE_MENU:
+            sprites.add(self.menu)
 
-        sprites.add(self.grog)
+        if self.state == STATE_GAME:
+            for ball in self.balls:
+                if not ball.exists:
+                    continue
+                sprites.add(ball)
+
+            sprites.add(self.grog)
+            sprites.add(self.score_board)
 
         sprites.draw(self.screen)
 
     def update(self):
+        if self.state == STATE_MENU:
+            return
+
         if self.target is not None:
             for ball in self.balls:
                 # Ignore the target or any ball not of the right type, but don't if the target is grog
@@ -182,8 +220,6 @@ class Game:
         for ball in self.balls:
             # Ignore balls that do not exists
             if not ball.exists:
-                ball.scale = ball.scale - 0.1 if ball.scale - 0.1 >= 0 else 0
-                ball.update()
                 continue
 
             # Check if at least a ball existed, if not, keep the last scale
@@ -201,10 +237,16 @@ class Game:
         return count
 
     def clean(self):
+        if self.state != STATE_MENU:
+            self.menu.kill()
+        else:
+            # Don't clean anything when in the menu
+            return
+
         # Clean content stated for deletion
         for i in range(len(self.balls) - 1, -1, -1):
             ball = self.balls[i]
-            if not ball.exists and ball.scale <= 0:
+            if not ball.exists:
                 self.balls.pop(i)
                 ball.kill()
 
@@ -216,13 +258,22 @@ class Game:
 
         if ready:
             self.target = None
-            if self.grog.demands_met(self.balls):
+            if not self.round_finished and self.grog.demands_met(self.balls):
                 self.round_finished = True
                 self.target = self.grog
 
-            if self.round_finished:
+            if self.round_finished and len(self.balls) <= 0:
+                # If the game finished and was cleaned, generate a new state
+                self.determine_score()
                 self.generate_field()
+                self.grog.determine_meal()
+                self.round_finished = False
                 self.clicks_this_round = 0
+        return
+
+    def determine_score(self):
+        self.score += max(self.base_score - self.score_loss * self.clicks_this_round, 0)
+        self.score_board.change_score(self.score)
         return
 
     def end_game(self):

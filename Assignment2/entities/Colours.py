@@ -4,10 +4,13 @@ colours = {
     "green": (38, 181, 36),
     "white": (255, 255, 255),
     "black": (2, 2, 2),
+    "gray": (158, 158, 158),
     "grog": (102, 160, 255),
+    "menu_bg": (158, 158, 158, 150),
 }
 
 possible_colours = ["red", "yellow", "green"]
+
 
 def next_color(current):
     index = 0

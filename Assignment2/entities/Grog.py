@@ -124,7 +124,7 @@ class Grog(pygame.sprite.Sprite):
                 text = self.main_font.render(
                     str(request["quantity"]),
                     1,
-                    colours["white"] if request["color"] != colours["yellow"] else colours["black"]
+                    colours["white"] if request["color"] != "yellow" else colours["black"]
                 )
                 text_rect = text.get_rect()
                 self.image.blit(text, (
