@@ -599,6 +599,7 @@ def a_fire():
     dx = 0
     dy = 0
     fire = False
+    debug_line = (0, 0)
     if target1_type == types["player"]:
         # If not within firing distance, return to moving towards it
         if (target1_distance[0] ** 2 + target2_distance[1] ** 2) > fire_distance ** 2:
