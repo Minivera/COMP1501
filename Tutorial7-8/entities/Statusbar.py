@@ -14,7 +14,7 @@ class Statusbar(pygame.sprite.Sprite):
         self.position = position
         self.title = title
         self.money = money
-        self.support = support
+        self.support = "{:0>2d}".format(support)
         self.image = None
         self.rect = ()
         self.set_image()
@@ -73,11 +73,11 @@ class Statusbar(pygame.sprite.Sprite):
         return
 
     def set_support(self, new_support):
-        self.support = new_support
+        self.support = "{:0>2d}".format(new_support)
         self.set_image()
         return
 
     def set_money(self, new_money):
-        self.money = new_money
+        self.money = str(new_money)
         self.set_image()
         return

@@ -303,11 +303,11 @@ def c_hide():
         target2_distance[1] + direction[1] * acceptable_distance
     )
 
-    steps_number = max(abs(vector_behind_col[0]), abs(vector_behind_col[1]))
+    steps_number = max(abs(vector_behind_col[0] - position[0]), abs(vector_behind_col[1] - position[1]))
 
     # Move towards that point
-    dx = float(vector_behind_col[0]) / steps_number
-    dy = float(vector_behind_col[1]) / steps_number
+    dx = float(vector_behind_col[0] - position[0]) / steps_number
+    dy = float(vector_behind_col[1] - position[1]) / steps_number
 
     # If we found a player, turn to face it
     rot_cc = 0
@@ -436,12 +436,12 @@ def a_wander():
     (target2_type, target2_distance, target2_angle, target2_info) = scan_for_closest_target(values, 4, 5, 6, "weapon")
 
     # If we don't have a weapon
-    if get_if_have_weapon():
+    if not get_if_have_weapon():
         # What are we doing here? Move to the best main state for this case
         if target1_type == types["player"] and target1_info[1]:
             next_state = "c_wander"
         else:
-            next_state = "a_wander"
+            next_state = "w_wander"
 
     # If we found a player, move to the the go behind state
     if target1_type == types["player"]:
@@ -465,7 +465,7 @@ def a_wander():
     # Make sure we evade anything we're moving towards
     (danger, danger_type, danger_distance, danger_angle) = scan_for_danger(position, get_velocity_tuple())
     if danger:
-        next_state = "w_evade"
+        next_state = "a_evade"
         target2_type = danger_type
         target2_distance = danger_distance
         target2_angle = danger_angle
@@ -487,15 +487,26 @@ def a_go_behind():
 
     # Scan for a player and optionally a weapon
     (target1_type, target1_distance, target1_angle, target1_info) = scan_for_target(values, 1, 2, 3, "player")
-    (target2_type, target2_distance, target2_angle, target2_info) = scan_for_target(values, 1, 2, 3, "weapon")
+
+    target2_type = "\x00\x00"
+    target2_distance = (0, 0)
+    target2_angle = 0
+    # Get the value for the last target2
+    if values[4] != "\x00\x00" and values[5] != "\x00\x00" and values[6] != "\x00\x00":
+        target2_type = values[4]
+        target2_distance = (
+            ord(values[5][:1]) - arena_dimensions[0],
+            ord(values[5][1:]) - arena_dimensions[1],
+        )
+        target2_angle = ord(values[6][:1])
 
     # If we don't have a weapon
-    if get_if_have_weapon():
+    if not get_if_have_weapon():
         # What are we doing here? Move to the best main state for this case
         if target1_type == types["player"] and target1_info[1]:
             next_state = "c_wander"
         else:
-            next_state = "a_wander"
+            next_state = "w_wander"
 
     # If we couldn't find a player, return to wander
     if target1_type != types["player"]:
@@ -509,7 +520,7 @@ def a_go_behind():
     debug_line = ()
     if target1_type == types["player"]:
         # If within firing distance, also commit to firing
-        if (target1_distance[0] ** 2 + target2_distance[1] ** 2) <= fire_distance ** 2:
+        if abs(target1_distance[0] ** 2 + target2_distance[1] ** 2) <= fire_distance ** 2:
             next_state = "a_fire"
 
         # Get current angle and compare it with the desired angle
@@ -525,42 +536,36 @@ def a_go_behind():
 
         # Get the player angle and do some vector math
         player_angle = target1_info[2]
-        behind_vector = vector_to_components(acceptable_distance, player_angle)
+        behind_vector = vector_to_components(acceptable_distance, invert_angle(player_angle))
 
         # Find a point behind the player_angle
         player_to_behind_vector = (
-            behind_vector[0] - target1_distance[0],
-            behind_vector[1] - target1_distance[1],
-        )
-        vector_length = sqrt(player_to_behind_vector[0] ** 2 + player_to_behind_vector[1] ** 2)
-        direction = (player_to_behind_vector[0] / vector_length, player_to_behind_vector[1] / vector_length)
-        vector_behind = (
-            behind_vector[0] + direction[0] * acceptable_distance,
-            behind_vector[1] + direction[1] * acceptable_distance
+            behind_vector[0] + target1_distance[0],
+            behind_vector[1] + target1_distance[1],
         )
 
-        steps_number = max(abs(vector_behind[0]), abs(vector_behind[1]))
+        steps_number = max(abs(player_to_behind_vector[0]), abs(player_to_behind_vector[1]))
 
         # Move towards that point
-        dx = float(vector_behind[0]) / steps_number
-        dy = float(vector_behind[1]) / steps_number
+        dx = float(player_to_behind_vector[0]) / steps_number
+        dy = float(player_to_behind_vector[1]) / steps_number
 
         debug_line = (
             int(position[0]),
             int(position[1]),
-            int(position[0] + vector_behind[0]),
-            int(position[1] + vector_behind[1]),
+            int(position[0] + player_to_behind_vector[0]),
+            int(position[1] + player_to_behind_vector[1]),
         )
 
     # Make sure we evade anything we're moving towards
     (danger, danger_type, danger_distance, danger_angle) = scan_for_danger(position, get_velocity_tuple())
     if danger:
-        next_state = "w_evade"
+        next_state = "a_evade"
         target2_type = danger_type
         target2_distance = danger_distance
         target2_angle = danger_angle
 
-    state_dict = build_state_dict(position, dx, dy, rot_cc, rot_cw, "hide", target1_type, target1_distance,
+    state_dict = build_state_dict(position, dx, dy, rot_cc, rot_cw, "go_behind", target1_type, target1_distance,
                                   target1_angle, target2_type, target2_distance, target2_angle)
     state_dict["DEBUGS"].append(debug_line)
 
@@ -579,15 +584,26 @@ def a_fire():
 
     # Scan for a player and optionally a weapon
     (target1_type, target1_distance, target1_angle, target1_info) = scan_for_target(values, 1, 2, 3, "player")
-    (target2_type, target2_distance, target2_angle, target2_info) = scan_for_target(values, 1, 2, 3, "weapon")
+
+    target2_type = "\x00\x00"
+    target2_distance = (0, 0)
+    target2_angle = 0
+    # Get the value for the last target2
+    if values[4] != "\x00\x00" and values[5] != "\x00\x00" and values[6] != "\x00\x00":
+        target2_type = values[4]
+        target2_distance = (
+            ord(values[5][:1]) - arena_dimensions[0],
+            ord(values[5][1:]) - arena_dimensions[1],
+        )
+        target2_angle = ord(values[6][:1])
 
     # If we don't have a weapon
-    if get_if_have_weapon():
+    if not get_if_have_weapon():
         # What are we doing here? Move to the best main state for this case
         if target1_type == types["player"] and target1_info[1]:
             next_state = "c_wander"
         else:
-            next_state = "a_wander"
+            next_state = "w_wander"
 
     # If we couldn't find a player, return to wander
     if target1_type != types["player"]:
@@ -599,10 +615,9 @@ def a_fire():
     dx = 0
     dy = 0
     fire = False
-    debug_line = (0, 0)
     if target1_type == types["player"]:
         # If not within firing distance, return to moving towards it
-        if (target1_distance[0] ** 2 + target2_distance[1] ** 2) > fire_distance ** 2:
+        if abs(target1_distance[0] ** 2 + target1_distance[1] ** 2) > fire_distance ** 2:
             next_state = "a_go_behind"
 
         # Get current angle and compare it with the desired angle
@@ -616,38 +631,12 @@ def a_fire():
             rot_cc = 1
             rot_cw = 0
 
-        # Get the player angle and do some vector math
-        player_angle = target1_info[2]
-        behind_vector = vector_to_components(acceptable_distance, player_angle)
-
-        # Find a point behind the player_angle
-        player_to_behind_vector = (
-            behind_vector[0] - target1_distance[0],
-            behind_vector[1] - target1_distance[1],
-        )
-        vector_length = sqrt(player_to_behind_vector[0] ** 2 + player_to_behind_vector[1] ** 2)
-        direction = (player_to_behind_vector[0] / vector_length, player_to_behind_vector[1] / vector_length)
-        vector_behind = (
-            behind_vector[0] + direction[0] * acceptable_distance,
-            behind_vector[1] + direction[1] * acceptable_distance
-        )
-
-        steps_number = max(abs(vector_behind[0]), abs(vector_behind[1]))
-
-        # Move towards that point
-        dx = float(vector_behind[0]) / steps_number
-        dy = float(vector_behind[1]) / steps_number
-
-        debug_line = (
-            int(position[0]),
-            int(position[1]),
-            int(position[0] + vector_behind[0]),
-            int(position[1] + vector_behind[1]),
-        )
+        # Move towards the player
+        dx = cos(radians(target1_angle))
+        dy = sin(radians(target1_angle))
 
         # If we can directly see the player in our current angle
-        (target_type, _, target_info) = get_the_radar_data(throw)
-        if target_type == types["player"]:
+        if delta < 1 or delta > 359:
             # Fire!
             fire = True
             if target1_info[1]:
@@ -660,16 +649,15 @@ def a_fire():
     # Make sure we evade anything we're moving towards
     (danger, danger_type, danger_distance, danger_angle) = scan_for_danger(position, get_velocity_tuple())
     if danger:
-        next_state = "w_evade"
+        next_state = "a_evade"
         target2_type = danger_type
         target2_distance = danger_distance
         target2_angle = danger_angle
 
-    state_dict = build_state_dict(position, dx, dy, rot_cc, rot_cw, "hide", target1_type, target1_distance,
+    state_dict = build_state_dict(position, dx, dy, rot_cc, rot_cw, "fire", target1_type, target1_distance,
                                   target1_angle, target2_type, target2_distance, target2_angle)
-    state_dict["DEBUGS"].append(debug_line)
 
-    # If firing, relase the weapon
+    # If firing, release the weapon
     if fire:
         state_dict["WEAPON"] = False
 
@@ -793,9 +781,7 @@ def shared_evade(main_state, primary_target):
     dy = 0
     # Accelerate away from danger if any is saved
     if danger_type != "\x00\x00":
-        target_angle = danger_angle - 180
-        if target_angle < 0:
-            target_angle += 359
+        target_angle = invert_angle(danger_angle)
 
         dx = cos(radians(target_angle))
         dy = sin(radians(target_angle))
@@ -910,7 +896,7 @@ def scan_for_closest_target(values, type_index, distance_index, angle_index, sea
             distance_compo = vector_to_components(distance, angle)
 
             if entity_type == searched_type and\
-                    (empty_tupple(target_distance) or compare_distance(distance_compo, target_distance)):
+                    (empty_tuple(target_distance) or compare_distance(distance_compo, target_distance)):
                 found = True
                 target_type = types[entity_type]
                 target_distance = distance_compo
@@ -924,7 +910,7 @@ def scan_for_closest_target(values, type_index, distance_index, angle_index, sea
                 distance_compo = vector_to_components(distance, angle)
 
                 if entity_type == searched_type and \
-                        (empty_tupple(target_distance) or compare_distance(distance_compo, target_distance)):
+                        (empty_tuple(target_distance) or compare_distance(distance_compo, target_distance)):
                     found = True
                     target_type = types[entity_type]
                     target_distance = distance_compo
@@ -947,7 +933,7 @@ def scan_for_closest_target(values, type_index, distance_index, angle_index, sea
 
             # Scan for both our target without any priority.
             if entity_type == searched_type and\
-                    (empty_tupple(target_distance) or compare_distance(distance_compo, target_distance)):
+                    (empty_tuple(target_distance) or compare_distance(distance_compo, target_distance)):
                 target_type = types[entity_type]
                 target_distance = distance_compo
                 target_angle = angle
@@ -972,7 +958,7 @@ def scan_for_danger(position, velocity):
         return True, types["wall"], (
             arena_dimensions[0] - position[0],
             0,
-        ), 90
+        ), 0
     if position[1] - acceptable_distance < 0:
         return True, types["wall"], (
             0,
@@ -982,7 +968,7 @@ def scan_for_danger(position, velocity):
         return True, types["wall"], (
             0,
             arena_dimensions[1] - position[1],
-        ), 0
+        ), 90
 
     agent_angle = int(degrees(atan2(velocity[1], velocity[0])))
 
@@ -1017,6 +1003,27 @@ def build_state_dict(position, dx, dy, rot_cc, rot_cw, current_state, target1_ty
     :param target2_angle: The angle of the secondary target from the agent.
     :return: A dictionary ready to be sent to the game
     """
+
+    c1 = "0"
+    c2 = "0"
+    d = "0"
+    try:
+        c1 = chr(int(arena_dimensions[0] + target1_distance[0]))
+        c2 = chr(int(arena_dimensions[1] + target1_distance[1]))
+        d = chr(int(target1_angle))
+    except ValueError:
+        print("Broken data given to char for target 1 distance,", target1_distance, target1_angle, target1_type)
+
+    f1 = "0"
+    f2 = "0"
+    x = "0"
+    try:
+        f1 = chr(int(arena_dimensions[0] + target2_distance[0]))
+        f2 = chr(int(arena_dimensions[1] + target2_distance[1]))
+        x = chr(int(target2_angle))
+    except ValueError:
+        print("Broken data given to char for target 2 distance,", target2_distance, target2_angle, target2_type)
+
     return {
         'ACLT_X': dx,
         'ACLT_Y': dy,
@@ -1024,15 +1031,11 @@ def build_state_dict(position, dx, dy, rot_cc, rot_cw, current_state, target1_ty
         'ROT_CW': rot_cw,
         'SAVE_A': states[current_state],
         'SAVE_B': target1_type,
-        'SAVE_C': chr(
-            int(arena_dimensions[0] + target1_distance[0])
-        ) + chr(int(arena_dimensions[1] + target1_distance[1])),
-        'SAVE_D': chr(int(target1_angle)) + "0",
+        'SAVE_C': c1 + c2,
+        'SAVE_D': d + "0",
         'SAVE_E': target2_type,
-        'SAVE_F': chr(
-            int(arena_dimensions[0] + target2_distance[0])
-        ) + chr(int(arena_dimensions[1] + target2_distance[1])),
-        'SAVE_X': chr(int(target2_angle)) + "0",
+        'SAVE_F': f1 + f2,
+        'SAVE_X': x + "0",
         # Write debug lines to the found player and weapon
         'DEBUGS': [
             (
@@ -1066,6 +1069,13 @@ def angle_range(angle, wanted_range):
     return got_range
 
 
+def invert_angle(angle):
+    new_angle = angle - 180
+    if new_angle < 0:
+        new_angle = 359 + new_angle
+    return new_angle
+
+
 def vector_to_components(magnitude, angle):
     """
     Returns the component representation of a vector
@@ -1089,10 +1099,10 @@ def compare_distance(distance1, distance2):
     return (distance1[0] ** 2 + distance1[1] ** 2) <= (distance2[0] ** 2 + distance2[1] ** 2)
 
 
-def empty_tupple(tupple):
+def empty_tuple(to_check):
     """
-    Check if the tupple is empty by checking if both it's component are == 0
-    :param tupple: The tupple to check
-    :return: Whether or not that tupple is empty
+    Check if the tuple is empty by checking if both it's component are == 0
+    :param to_check: The tuple to check
+    :return: Whether or not that tuple is empty
     """
-    return tupple[0] == 0 and tupple[1] == 0
+    return to_check[0] == 0 and to_check[1] == 0

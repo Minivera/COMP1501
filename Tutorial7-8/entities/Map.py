@@ -1,4 +1,5 @@
 import pygame
+import math
 from constants.Colours import colours
 from constants.Types import types
 
@@ -30,13 +31,6 @@ class Map(pygame.sprite.Sprite):
                     tile.fill(colours["paths"])
                 elif column["type"] == types["grass"]:
                     tile.fill(colours["grass"])
-                #elif column["type"] == types["souvenir_shop"]:
-
-                #elif column["type"] == types["flower_shop"]:
-
-                #elif column["type"] == types["clothes_shop"]:
-
-                #elif column["type"] == types["food_shop"]:
 
                 # draw a white border around each tile to show the grid
                 pygame.draw.rect(
@@ -78,3 +72,8 @@ class Map(pygame.sprite.Sprite):
         )
         self.set_image()
         return
+
+    def square_under_mouse(self, position):
+        x = math.floor(position[0] / self.square_size[0])
+        y = math.floor(position[1] / self.square_size[1])
+        return self.map[y][x]
