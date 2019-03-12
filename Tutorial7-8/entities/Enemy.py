@@ -62,6 +62,8 @@ class Enemy(pygame.sprite.Sprite):
         return
 
     def apply_effect(self, modifier):
+        if modifier is None:
+            return
         self.frame = 0
         self.modifier_applied = True
         self.speed_modifier = modifier

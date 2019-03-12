@@ -1,6 +1,7 @@
 import pygame
 from entities.Statusbar import Statusbar
 from entities.CircleMenu import CircleMenu
+from entities.UpgradeMenu import UpgradeMenu
 from entities.Map import Map
 from entities.Enemy import Enemy
 from entities.towers.SouvenirShop import SouvenirShop
@@ -27,7 +28,7 @@ class Game:
 
     spawn_delay = 30
 
-    rebuild_distance = 4
+    rebuild_distance = 3
 
     def __init__(self, screen_size):
         self.is_running = False
@@ -64,7 +65,8 @@ class Game:
         self.generate_map()
         self.decide_enemies_path()
         self.generate_wave()
-        self.circle_menu = CircleMenu((0, 0), self.map_entity.square_size[0])
+        self.circle_menu = CircleMenu((0, 0), self.map_entity.square_size[0], self.money)
+        self.upgrade_menu = UpgradeMenu((0, 0), self.map_entity.square_size[0], self.money)
 
     def generate_map(self):
         self.grid = []
@@ -96,20 +98,6 @@ class Game:
                     if i > 0 and self.grid[i - 1][j]["type"] == types["path"]:
                         self.grid[i][j]["next"].append(self.grid[i - 1][j]["position"])
                         self.grid[i - 1][j]["previous"].append(self.grid[i][j]["position"])
-                    """
-                    # Left square
-                    if j > 0 and self.grid[i][j - 1]["type"] == types["path"]:
-                        self.grid[i][j]["next"].append(self.grid[i][j - 1]["position"])
-                        self.grid[i][j - 1]["previous"].append(self.grid[i][j]["position"])
-                    # Bottom square
-                    if i < self.map_size - 1 and self.grid[i + 1][j]["type"] == types["path"]:
-                        self.grid[i][j]["next"].append(self.grid[i + 1][j]["position"])
-                        self.grid[i + 1][j]["previous"].append(self.grid[i][j]["position"])
-                    # Right square
-                    if j < self.map_size - 1 and self.grid[i][j + 1]["type"] == types["path"]:
-                        self.grid[i][j]["next"].append(self.grid[i][j + 1]["position"])
-                        self.grid[i][j + 1]["previous"].append(self.grid[i][j]["position"])
-                    """
 
         self.map_entity = Map(
             (self.map_surface.get_rect()[2], self.map_surface.get_rect()[3]),
@@ -167,11 +155,17 @@ class Game:
                 return
 
             if event.type == pygame.MOUSEBUTTONUP:
-                if event.button == BUTTON_RIGHT and\
-                        self.map_entity.square_under_mouse(map_mouse_pos)["type"] == types["path"]:
+                clicked_square = self.map_entity.square_under_mouse(map_mouse_pos)
+                if event.button == BUTTON_RIGHT and clicked_square["type"] == types["path"]:
                     self.circle_menu.set_position(map_mouse_pos)
-                    self.circle_menu.set_clicked_square(self.map_entity.square_under_mouse(map_mouse_pos))
+                    self.circle_menu.set_clicked_square(clicked_square)
                     self.circle_menu.open()
+                    continue
+                if event.button == BUTTON_RIGHT and clicked_square["type"] != types["path"] and\
+                        clicked_square["type"] != types["grass"]:
+                    self.upgrade_menu.set_position(map_mouse_pos)
+                    self.upgrade_menu.set_clicked_square(clicked_square)
+                    self.upgrade_menu.open()
                     continue
                 if event.button == BUTTON_LEFT:
                     if self.circle_menu.is_open and self.circle_menu.hit_menu(map_mouse_pos):
@@ -182,6 +176,14 @@ class Game:
                             continue
                     elif self.circle_menu.is_open:
                         self.circle_menu.close()
+                        continue
+                    if self.upgrade_menu.is_open and self.upgrade_menu.hit_menu(map_mouse_pos):
+                        if self.upgrade_menu.check_click(map_mouse_pos):
+                            self.upgrade_tower()
+                            self.upgrade_menu.close()
+                            continue
+                    elif self.upgrade_menu.is_open:
+                        self.upgrade_menu.close()
                         continue
         return
 
@@ -236,6 +238,7 @@ class Game:
             self.generate_wave()
 
         self.status_bar.set_money(self.money)
+        self.circle_menu.set_money(self.money)
         self.screen_sprites.update()
         self.map_sprites.update()
         return
@@ -285,7 +288,6 @@ class Game:
 
         # Pay the cost
         self.money -= tower_type["cost"]
-        self.status_bar.set_money(self.money)
 
         # Change the square
         square["type"] = tower_type["type"]
@@ -303,11 +305,25 @@ class Game:
         previous_pos = square["previous"][0]
         previous = self.grid[previous_pos[1]][previous_pos[0]]
         previous["next"].remove(square["position"])
-        side = -1 if previous["position"][0] > 0 else 0
+        side = -1 if previous["position"][0] <= self.map_size // 2 else 1
 
         current = self.grid[previous["position"][1]][previous["position"][0] + side]
         i = 1
-        while i < self.rebuild_distance and 0 < current["position"][0] + side < self.map_size:
+
+        # Make sure we are not working on a shop or current path
+        if current["type"] != types["grass"]:
+            # Try the side above, under or on the other side
+            if self.grid[previous["position"][1]][previous["position"][0] - side]["type"] == types["grass"]:
+                current = self.grid[previous["position"][1]][previous["position"][0] - side]
+                side = -side
+            elif self.grid[previous["position"][1] + 1][previous["position"][0]]["type"] == types["grass"]:
+                current = self.grid[previous["position"][1] + 1][previous["position"][0]]
+                i = 0
+            elif self.grid[previous["position"][1] - 1][previous["position"][0]]["type"] == types["grass"]:
+                current = self.grid[previous["position"][1] - 1][previous["position"][0]]
+                i = 0
+
+        while i <= self.rebuild_distance and 0 < current["position"][0] + side < self.map_size:
             previous["next"].append(current["position"])
             current["type"] = types["path"]
             current["previous"].append(previous["position"])
@@ -318,7 +334,7 @@ class Game:
         # Go up by the same amount we went to the side
         current = self.grid[previous["position"][1] - 1][previous["position"][0]]
         i = 1
-        while i < self.rebuild_distance and 0 < current["position"][1] - 1 < self.map_size:
+        while i <= self.rebuild_distance and 0 < current["position"][1] - 1 < self.map_size:
             previous["next"].append(current["position"])
             current["type"] = types["path"]
             current["previous"].append(previous["position"])

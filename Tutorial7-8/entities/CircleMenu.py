@@ -11,7 +11,7 @@ class CircleMenu(pygame.sprite.Sprite):
     shop_size = 40
     margin = 10
 
-    def __init__(self, position, square_size):
+    def __init__(self, position, square_size, current_money):
         pygame.sprite.Sprite.__init__(self)
         self.main_font = pygame.font.Font("assets/monogram.ttf", self.font_size)
         self.position = position
@@ -19,6 +19,7 @@ class CircleMenu(pygame.sprite.Sprite):
         self.image = None
         self.is_open = False
         self.saved_square = None
+        self.saved_money = current_money
         self.rect = ()
         self.set_image()
 
@@ -55,7 +56,11 @@ class CircleMenu(pygame.sprite.Sprite):
         souvenir_rect.center = (self.radius, self.shop_size // 2 + self.margin)
         pygame.draw.rect(self.image, colours["shop"], souvenir_rect)
         # Draw the cost
-        text = self.main_font.render(str(souvenir_shop["cost"]) + "$", 1, colours["text_contrasted"])
+        text = self.main_font.render(
+            str(souvenir_shop["cost"]) + "$",
+            1,
+            colours["text_contrasted"] if souvenir_shop["cost"] <= self.saved_money else colours["text_gray"],
+        )
         text_rect = text.get_rect(center=(self.radius, self.shop_size + self.margin * 2))
         self.image.blit(text, text_rect)
 
@@ -64,7 +69,11 @@ class CircleMenu(pygame.sprite.Sprite):
         flower_rect.center = (self.radius * 2 - self.shop_size // 2 - self.margin, self.radius)
         pygame.draw.rect(self.image, colours["shop"], flower_rect)
         # Draw the cost
-        text = self.main_font.render(str(flower_shop["cost"]) + "$", 1, colours["text_contrasted"])
+        text = self.main_font.render(
+            str(flower_shop["cost"]) + "$",
+            1,
+            colours["text_contrasted"] if flower_shop["cost"] <= self.saved_money else colours["text_gray"],
+        )
         text_rect = text.get_rect(center=(
             self.radius * 2 - self.shop_size // 2 - self.margin,
             self.radius + self.shop_size // 2 + self.margin,
@@ -76,7 +85,11 @@ class CircleMenu(pygame.sprite.Sprite):
         clothing_rect.center = (self.radius, self.radius * 2 - self.shop_size // 2 - self.margin * 2)
         pygame.draw.rect(self.image, colours["shop"], clothing_rect)
         # Draw the cost
-        text = self.main_font.render(str(clothing_shop["cost"]) + "$", 1, colours["text_contrasted"])
+        text = self.main_font.render(
+            str(clothing_shop["cost"]) + "$",
+            1,
+            colours["text_contrasted"] if clothing_shop["cost"] <= self.saved_money else colours["text_gray"],
+        )
         text_rect = text.get_rect(center=(self.radius, self.radius * 2 - self.margin))
         self.image.blit(text, text_rect)
 
@@ -85,7 +98,11 @@ class CircleMenu(pygame.sprite.Sprite):
         food_rect.center = (self.shop_size // 2 + self.margin, self.radius)
         pygame.draw.rect(self.image, colours["shop"], food_rect)
         # Draw the cost
-        text = self.main_font.render(str(food_shop["cost"]) + "$", 1, colours["text_contrasted"])
+        text = self.main_font.render(
+            str(food_shop["cost"]) + "$",
+            1,
+            colours["text_contrasted"] if food_shop["cost"] <= self.saved_money else colours["text_gray"],
+        )
         text_rect = text.get_rect(center=(
             self.shop_size // 2 + self.margin,
             self.radius + self.shop_size // 2 + self.margin,
@@ -143,6 +160,11 @@ class CircleMenu(pygame.sprite.Sprite):
 
     def set_position(self, new_position):
         self.position = new_position
+        self.set_image()
+        return
+
+    def set_money(self, new_money):
+        self.saved_money = new_money
         self.set_image()
         return
 

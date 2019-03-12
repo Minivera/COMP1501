@@ -8,3 +8,7 @@ class ClothingShop(Tower):
                        clothing_shop["damage"], clothing_shop["attack_speed"])
         self.effect = clothing_shop["slow"]
 
+    def upgrade(self):
+        Tower.upgrade(self)
+        self.effect /= 2
+

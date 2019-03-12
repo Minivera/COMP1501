@@ -8,3 +8,6 @@ class FoodShop(Tower):
                        food_shop["damage"], food_shop["attack_speed"])
         self.effect = food_shop["slow"]
 
+    def upgrade(self):
+        Tower.upgrade(self)
+        self.effect /= 2
