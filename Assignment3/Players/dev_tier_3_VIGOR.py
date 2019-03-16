@@ -1,4 +1,4 @@
-# -? "VIGOR"
+# -> "VIGOR"
 def start ():
 	return "l11ll11l1ll11ll111ll",{}
 def ll11lll111ll1111ll1l (*O0O00O00OOO0O0000 ):
