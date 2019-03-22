@@ -1,0 +1,48 @@
+[
+  {
+    "label": "start",
+    "description": "This is a test description",
+    "commands": [
+      {
+        "command": "attack",
+        "keyword": "shady dude",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "scene_2"
+        }
+      },
+      {
+        "command": "talk",
+        "keyword": "shady dude",
+        "result": {
+          "type": "describe",
+          "description": "The shady dude doesn't want to talk to you"
+        }
+      },
+      {
+        "command": "try",
+        "keyword": "losing",
+        "result": {
+          "type": "lose"
+        }
+      }
+    ]
+  },
+  {
+    "label": "scene_2",
+    "description": "This is a challenge scene",
+    "auto_command": {
+      "result": {
+        "type": "trigger_challenge"
+      }
+    },
+    "challenge": {
+      "description": "A very angry shady dyde",
+      "target_number": 15,
+      "stat": "BODY",
+      "modifier": "SKILL",
+      "difficulty": 3,
+      "diff_modifier": 1
+    }
+  }
+]
