@@ -31,18 +31,22 @@
   {
     "label": "scene_2",
     "description": "This is a challenge scene",
+    "is_objective": true,
     "auto_command": {
       "result": {
         "type": "trigger_challenge"
       }
     },
     "challenge": {
-      "description": "A very angry shady dyde",
-      "target_number": 15,
-      "stat": "BODY",
-      "modifier": "SKILL",
+      "type": "combat",
+      "description": "A very angry shady dude",
+      "target": "shady dude",
+      "target_number": 5,
+      "stat": "body",
+      "modifier": "skill",
       "difficulty": 3,
-      "diff_modifier": 1
+      "diff_modifier": 1,
+      "won_scene": "start"
     }
   }
 ]
