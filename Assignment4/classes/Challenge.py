@@ -1,5 +1,5 @@
 import random
-from classes.Constants import state_changers
+from constants.Constants import state_changers
 from helper.ChallengeResultMessages import attack_win_message, attack_lose_message,\
     defence_win_message, defence_lose_message
 from helper.ChallengeMessages import attack_message, defence_message
@@ -23,9 +23,11 @@ class Challenge:
     def generate_rolls(self):
         # Generate the player's die rolls
         if len(self.character_die_rolls) <= 0:
+            # Add + 2 if the player has a tool
+            modifier = 2 if self.character.has_tool(self.challenge["tool"]) else 0
             for i in range(0, self.character.get_stat(self.challenge["stat"])):
                 self.character_die_rolls.append(
-                    random.randint(1, 6) + self.character.get_modifier(self.challenge["modifier"])
+                    random.randint(1, 6) + modifier
                 )
 
         # Generate the challenge's die rolls
@@ -41,15 +43,26 @@ class Challenge:
             print(self.challenge["description"])
 
             # Print the challenge difficulty and stat
-            print("This is a challenge based on your {} of {} modified by your {} of +{}\n".format(
-                self.challenge["stat"],
-                self.character.get_stat(self.challenge["stat"]),
-                self.challenge["modifier"],
-                self.character.get_modifier(self.challenge["modifier"]),
-            ))
-            print("The challenge is rolling {} dice with a modifier of +{}\n".format(
+            if self.character.has_tool(self.challenge["tool"]):
+                print("This is a challenge based on your {} of {} using a {} for a +2 bonus\n".format(
+                    self.challenge["stat"],
+                    self.character.get_stat(self.challenge["stat"]),
+                    self.challenge["tool"],
+                ))
+            else:
+                print(
+                    "This is a challenge based on your {} of {} and would use a {}, but you have none remaining\n"
+                    .format(
+                        self.challenge["stat"],
+                        self.character.get_stat(self.challenge["stat"]),
+                        self.challenge["tool"],
+                    ),
+                )
+
+            print("The challenge is rolling {} dice with a modifier of {}\n".format(
                 self.challenge["difficulty"],
-                self.challenge["diff_modifier"],
+                "+{}".format(self.challenge["diff_modifier"]) if self.challenge["diff_modifier"] > 0
+                else self.challenge["diff_modifier"],
             ))
             print("The Challenge's difficulty is {}\n".format(
                 self.challenge["target_number"],
@@ -98,10 +111,16 @@ class Challenge:
         # Check if the character won
         if self.challenge_hp <= 0:
             print("You have won the challenge!\n")
-            return state_changers["TO_SCENE"], self.challenge["won_scene"], False
+            return state_changers["TO_SCENE"], {
+                "lower_tool": self.challenge["tool"],
+                "new_label": self.challenge["won_scene"],
+            }, False
 
         if self.character.health <= 0 and "lose_scene" in self.challenge:
-            return state_changers["TO_SCENE"], self.challenge["lose_scene"], False
+            return state_changers["TO_SCENE"], {
+                "lower_tool": self.challenge["tool"],
+                "new_label": self.challenge["lose_scene"],
+            }, False
         elif self.character.health <= 0:
             return state_changers["LOSE"], None, False
 

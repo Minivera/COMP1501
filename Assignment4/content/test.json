@@ -17,6 +17,37 @@
         "result": {
           "type": "describe",
           "description": "The shady dude doesn't want to talk to you"
+        },
+        "replay_result": {
+          "type": "describe",
+          "description": "The shady dude still doesn't want to talk to you"
+        }
+      },
+      {
+        "command": "take",
+        "keyword": "knife",
+        "result": {
+          "description": "You find a random knife",
+          "type": "add_tool",
+          "tool": "knife"
+        },
+        "replay_result": {
+          "type": "describe",
+          "description": "There is no knife remaining"
+        }
+      },
+      {
+        "command": "flex",
+        "keyword": "",
+        "result": {
+          "description": "You flex a bunch and increase your brawn and health!",
+          "type": "increase_stat",
+          "stat": "brawn",
+          "increase": 2
+        },
+        "replay_result": {
+          "type": "describe",
+          "description": "You have already flexed today"
         }
       },
       {
@@ -42,10 +73,10 @@
       "description": "A very angry shady dude",
       "target": "shady dude",
       "target_number": 5,
-      "stat": "body",
-      "modifier": "skill",
+      "stat": "brawn",
+      "tool": "knife",
       "difficulty": 3,
-      "diff_modifier": 1,
+      "diff_modifier": -1,
       "won_scene": "start"
     }
   }
