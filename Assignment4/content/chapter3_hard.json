@@ -1,0 +1,22 @@
+[
+  {
+    "label": "chapter_3_hard_guard_combat",
+    "description": "NOTE: I was too sick to finish this route, going back to the side of the bank",
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_3_side"
+      }
+    }
+  },
+  {
+    "label": "chapter_3_hard_guard_social",
+    "description": "NOTE: I was too sick to finish this route, going back to the side of the bank",
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_3_side"
+      }
+    }
+  }
+]

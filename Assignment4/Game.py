@@ -23,7 +23,7 @@ class Game:
         self.current_scene = Scene(scenes[0], self.character, self.ran_commands, self.saved_values)
         # Try to load the "start" scene rather than the first one
         for scene in self.scenes:
-            if scene["label"] == "chapter_2_start":
+            if scene["label"] == "start":
                 self.current_scene = Scene(scene, self.character, self.ran_commands, self.saved_values)
 
     def start(self):
@@ -214,6 +214,9 @@ class Game:
             # TODO: Improve this message
             print("You lose\n")
             self.state = self.STATE_LOST
+        # End the game
+        elif changer == state_changers["END"]:
+            print("You finished the game\n")
 
         if objective_scene and self.objectives_completed < self.total_objectives - 1:
             self.objectives_completed += 1

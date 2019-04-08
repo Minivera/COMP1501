@@ -1,5 +1,6 @@
 state_changers = {
     "CONTINUE": "continue",
+    "END": "end",
     "TO_SCENE": "go_to_scene",
     "INCREASE_STAT": "increase_stat",
     "ADD_TOOL": "add_tool",
@@ -19,6 +20,7 @@ command_results = {
     "ADD_TOOL_AND_SWITCH": "add_tool_and_switch",
     "ADD_TOOL_AND_STAT_AND_SWITCH": "add_tool_and_stat_and_switch",
     "LOSE": "lose",
+    "END": "end",
 }
 
 challenge_types = {

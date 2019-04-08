@@ -187,6 +187,14 @@ class Scene:
             }
             is_objective = "is_objective" in self.scene and self.scene["is_objective"]
 
+        # For the end game action
+        elif command_result["type"] == command_results["END"]:
+            changer = state_changers["END"]
+            values = {
+                "command": command,
+            }
+            is_objective = "is_objective" in self.scene and self.scene["is_objective"]
+
         if "save" in command_result:
             values["save"] = command_result["save"]
 

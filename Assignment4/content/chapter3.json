@@ -2,6 +2,7 @@
   {
     "label": "chapter_3_start",
     "description": "On the morning of the heist, I approached the bank by myself, dressed in work clothes. Henry had suggested I try to infiltrate as a janitor and gave me the required papers. I ended up not bringing my teammate along, they were more useful as support than in person.",
+    "is_objective": true,
     "auto_command": {
       "result": {
         "type": "add_tool_and_switch",
@@ -12,7 +13,7 @@
   },
   {
     "label": "chapter_3_bank",
-    "description": "The bank stood in front of me, I only had to make my choice",
+    "description": "The bank stood in front of me, I had to decide which approach I would take.",
     "commands": [
       {
         "command": "look",
@@ -44,17 +45,68 @@
     ]
   },
   {
-    "label": "chapter_3_front",
-    "description": "I entered the bank through the front door, people didn't seem to mind my presence.",
+    "label": "chapter_3_side",
+    "description": "I moved near the bank side entrance.",
     "commands": [
       {
         "command": "look",
         "keyword": "around",
         "result": {
           "type": "describe",
-          "description": "The bank was mostly made up of a very fancy waiting room and some counters. The only access into the bank itself was through the service door next to the counters. Most employee probably used the side dor to get in. My two options were to make a scene or try and infiltrate"
+          "description": "The bank's side had a service door for employees with a guard guarding it, if I wanted to get in, I had to get past him. I could either try convincing him I was a janitor or take him out."
+        }
+      },
+      {
+        "command": "go",
+        "keyword": "back",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_bank"
+        }
+      },
+      {
+        "command": "take",
+        "keyword": "guard",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_hard_guard_combat"
+        }
+      },
+      {
+        "command": "convince",
+        "keyword": "guard",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_hard_guard_social"
+        }
+      },
+      {
+        "command": "look",
+        "keyword": "secret",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_secret"
         }
       }
     ]
+  },
+  {
+    "label": "chapter_3_capture",
+    "description": "Even with my best efforts, I ended up getting captured.",
+    "auto_command": {
+      "result": {
+        "type": "lose"
+      }
+    }
+  },
+  {
+    "label": "chapter_3_success",
+    "description": "I left the bank from the sewers, I was sure to become a legend.",
+    "is_objective": true,
+    "auto_command": {
+      "result": {
+        "type": "end"
+      }
+    }
   }
 ]

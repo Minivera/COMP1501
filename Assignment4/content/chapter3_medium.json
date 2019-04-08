@@ -1,0 +1,411 @@
+[
+  {
+    "label": "chapter_3_front",
+    "description": "I entered the bank through the front door, people didn't seem to mind my presence.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "The bank was mostly made up of a very fancy waiting room and some counters. The only access into the bank itself was through the service door next to the counters. Most employees probably used the side door to get in. I could try and go talk with a cashier, make a scene or try to infiltrate. I could also go back to the exterior of the bank."
+        }
+      },
+      {
+        "command": "go",
+        "keyword": "back",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_bank"
+        }
+      },
+      {
+        "command": "talk",
+        "keyword": "cashier",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_cashier"
+        }
+      },
+      {
+        "command": "make",
+        "keyword": "scene",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_holdup"
+        }
+      },
+      {
+        "command": "try",
+        "keyword": "infiltrate",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_infiltrate"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_3_cashier",
+    "description": "I stood in front of the cashier, ready to ask her questions",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "The cashier was a middle aged woman, visibly unhappy about her work situation. I could try to ask her about the bank or get to the convincing."
+        }
+      },
+      {
+        "command": "go",
+        "keyword": "back",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_front"
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "bank",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"How has it been working here since the last few weeks?\"",
+            "Cashier: \"Well, except that the new security guys have been making a mess of my stuff for days now, I guess nothing changed that much.\""
+          ]
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "security",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"I heard you got new security personnel.\"",
+            "Cashier: \"Yes, they've been helping us make sure we won't get robbed again. They're changing the team to a cheaper one today, I suppose event he Royal Oak cannot afford the best security for long.\""
+          ]
+        }
+      },
+      {
+        "command": "convince",
+        "keyword": "",
+        "result": {
+          "type": "trigger_challenge"
+        },
+        "replay_result": {
+          "type": "describe",
+          "description": "I decided it was probably better to not try to convince her again."
+        }
+      }
+    ],
+    "challenge": {
+      "type": "social",
+      "description": "I tried to convince the cashier that I was a janitors",
+      "target": "cashier",
+      "target_number": 3,
+      "stat": "smart",
+      "tool": "documents",
+      "difficulty": 2,
+      "diff_modifier": 1,
+      "won_scene": "chapter_3_medium_inside"
+    }
+  },
+  {
+    "label": "chapter_3_holdup",
+    "description": "I decided to make a scene and call a hold-up, as long as I got in, it was probably the best choice.",
+    "auto_command": {
+      "result": {
+        "save": "triggered_alarm",
+        "type": "trigger_challenge"
+      }
+    },
+    "challenge": {
+      "type": "combat",
+      "description": "I tried to tie down the guards and clients present with rope before getting in.",
+      "target": "cashier",
+      "target_number": 6,
+      "stat": "brawn",
+      "tool": "rope",
+      "difficulty": 4,
+      "diff_modifier": 2,
+      "won_scene": "chapter_3_medium_inside"
+    }
+  },
+  {
+    "label": "chapter_3_infiltrate",
+    "description": "As I approached the service door sneakily, the cashier called out to me, I had to convince her I was a janitor.",
+    "auto_command": {
+      "result": {
+        "type": "trigger_challenge"
+      }
+    },
+    "challenge": {
+      "type": "social",
+      "description": "I tried to convince the cashier that I was a janitors",
+      "target": "bank",
+      "target_number": 5,
+      "stat": "smart",
+      "tool": "documents",
+      "difficulty": 3,
+      "diff_modifier": 1,
+      "won_scene": "chapter_3_medium_inside"
+    }
+  },
+  {
+    "label": "chapter_3_medium_inside",
+    "description": "For better or worse, I managed to get inside the bank. The vault was not too far from here, I made a run for it and managed to get past a few guards.",
+    "is_objective": true,
+    "auto_command": {
+      "if": {
+        "key": "triggered_alarm",
+        "value": 1,
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_medium_vault_alarm"
+        }
+      },
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_3_medium_vault"
+      }
+    }
+  },
+  {
+    "label": "chapter_3_medium_vault",
+    "description": "I stood in front of the first vault door. It was a simple metal door easily opened with a lock-pick.",
+    "auto_command": {
+      "result": {
+        "type": "trigger_challenge"
+      }
+    },
+    "challenge": {
+      "type": "skill",
+      "description": "I tried to pick the lock of that metal door",
+      "target": "metal door",
+      "target_number": 3,
+      "stat": "skill",
+      "tool": "lock-pick",
+      "difficulty": 2,
+      "diff_modifier": 0,
+      "won_scene": "chapter_3_medium_inside_vault"
+    }
+  },
+  {
+    "label": "chapter_3_medium_vault_alarm",
+    "description": "I stood in front of the first vault door. It was a simple metal door easily opened with a lock-pick. The alarm I triggered before getting in rang in my ears.",
+    "auto_command": {
+      "result": {
+        "type": "trigger_challenge"
+      }
+    },
+    "challenge": {
+      "type": "skill",
+      "description": "I tried to pick the lock of that metal door",
+      "target": "metal door",
+      "target_number": 3,
+      "stat": "skill",
+      "tool": "lock-pick",
+      "difficulty": 2,
+      "diff_modifier": 0,
+      "won_scene": "chapter_3_medium_inside_vault_alarm"
+    }
+  },
+  {
+    "label": "chapter_3_medium_inside_vault",
+    "description": "After passing through the first door, I stood in front of the vault door. Only a bomb could take care of this.",
+    "is_objective": true,
+    "auto_command": {
+      "result": {
+        "type": "trigger_challenge"
+      }
+    },
+    "challenge": {
+      "type": "skill",
+      "description": "I tried to break open the vault door.",
+      "target": "metal door",
+      "target_number": 3,
+      "stat": "skill",
+      "tool": "bomb",
+      "difficulty": 2,
+      "diff_modifier": 1,
+      "won_scene": "chapter_3_medium_money"
+    }
+  },
+  {
+    "label": "chapter_3_medium_inside_vault_alarm",
+    "description": "After passing through the first door, I stood in front of the vault door. Only a bomb could take care of this. The alarm was still ringing in my ears.",
+    "is_objective": true,
+    "auto_command": {
+      "result": {
+        "type": "trigger_challenge"
+      }
+    },
+    "challenge": {
+      "type": "skill",
+      "description": "I tried to break open the vault door.",
+      "target": "metal door",
+      "target_number": 3,
+      "stat": "skill",
+      "tool": "bomb",
+      "difficulty": 2,
+      "diff_modifier": 1,
+      "won_scene": "chapter_3_medium_money_alarm"
+    }
+  },
+  {
+    "label": "chapter_3_medium_money",
+    "description": "I got into the vault.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "The vault was big and fancy. I already knew which store had the jewel inside, it was only a matter or taking it and leaving with enough money to hide until the next big heist. I could see the hole from the last heist from my position, I needed to take enough money before the guards caught me and flee through there."
+        }
+      },
+      {
+        "command": "steal",
+        "keyword": "jewel",
+        "if": {
+          "key": "vault_actions",
+          "value": 4,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_3_capture"
+          }
+        },
+        "result": {
+          "save": "vault_actions",
+          "type": "switch_scene",
+          "scene_label": "chapter_3_medium_jewel"
+        }
+      },
+      {
+        "command": "take",
+        "keyword": "money",
+        "if": {
+          "key": "vault_actions",
+          "value": 4,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_3_capture"
+          }
+        },
+        "result": {
+          "save": "vault_actions",
+          "type": "describe",
+          "description": "I opened a bunch of smaller vaults and took as much money as I could. \nGained 1 money."
+        }
+      },
+      {
+        "command": "flee",
+        "keyword": "",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_medium_flee"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_3_medium_money_alarm",
+    "description": "I got into the vault, the alarm still killing my ears.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "The vault was big and fancy. I already knew which store had the jewel inside, it was only a matter or taking it and leaving with enough money to hide until the next big heist. I could see the hole from the last heist from my position, I needed to take enough money before the guards caught me and flee through there."
+        }
+      },
+      {
+        "command": "steal",
+        "keyword": "jewel",
+        "if": {
+          "key": "vault_actions",
+          "value": 2,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_3_capture"
+          }
+        },
+        "result": {
+          "save": "vault_actions",
+          "type": "switch_scene",
+          "scene_label": "chapter_3_medium_jewel"
+        },
+        "replay_result": {
+          "type": "describe",
+          "description": "I already had the jewel stashed away in my bag."
+        }
+      },
+      {
+        "command": "take",
+        "keyword": "money",
+        "if": {
+          "key": "vault_actions",
+          "value": 2,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_3_capture"
+          }
+        },
+        "result": {
+          "save": "vault_actions",
+          "type": "describe",
+          "description": "I opened a bunch of smaller vaults and took as much money as I could. \nGained 1 money."
+        }
+      },
+      {
+        "command": "flee",
+        "keyword": "",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_medium_flee"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_3_medium_jewel",
+    "description": "I opened the small vault containing the Crimson Jewel. It was a beautiful red diamond, no wonder so many people wanted to get a hold of it. I stashed it in my bag and returned to the vault.",
+    "is_objective": true,
+    "auto_command": {
+      "if": {
+        "key": "triggered_alarm",
+        "value": 1,
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_medium_money_alarm"
+        }
+      },
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_3_medium_money"
+      }
+    }
+  },
+  {
+    "label": "chapter_3_medium_flee",
+    "description": "With all I needed in my bag, I quickly left the vault and took a sharp turn towards the hole in the wall from the last heist. Two guards stood in front of me, I had to act quickly.",
+    "auto_command": {
+      "result": {
+        "type": "trigger_challenge"
+      }
+    },
+    "challenge": {
+      "type": "combat",
+      "description": "I had to take care of the guards quickly.",
+      "target": "guard",
+      "target_number": 5,
+      "stat": "brawn",
+      "tool": "knife",
+      "difficulty": 3,
+      "diff_modifier": 2,
+      "won_scene": "chapter_3_success"
+    }
+  }
+]

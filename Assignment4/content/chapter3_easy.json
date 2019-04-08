@@ -1,0 +1,151 @@
+[
+  {
+    "label": "chapter_3_secret",
+    "description": "Looking around the side of the bank, I ended up finding a small entrance to the sewers. It was really well hidden behind the bank and some plants, it probably was an entrance used for the old building that was there before they built the bank. I was right over the guard guarding the broken wall of the vault.",
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_3_easy_guard"
+      }
+    }
+  },
+  {
+    "label": "chapter_3_easy_guard",
+    "description": "As I jumped down on one of the guard, knocking him out, I had to take care of the second guard who was surprised by my sudden appearance.",
+    "is_objective": true,
+    "auto_command": {
+      "result": {
+        "type": "trigger_challenge"
+      }
+    },
+    "challenge": {
+      "type": "combat",
+      "description": "I had to take care of the guard quickly.",
+      "target": "guard",
+      "target_number": 3,
+      "stat": "brawn",
+      "tool": "knife",
+      "difficulty": 3,
+      "diff_modifier": 2,
+      "won_scene": "chapter_3_easy_vault"
+    }
+  },
+  {
+    "label": "chapter_3_easy_vault",
+    "description": "I stood in front of the first vault door. It was a simple metal door easily opened with a lock-pick.",
+    "auto_command": {
+      "result": {
+        "type": "trigger_challenge"
+      }
+    },
+    "challenge": {
+      "type": "skill",
+      "description": "I tried to pick the lock of that metal door",
+      "target": "metal door",
+      "target_number": 3,
+      "stat": "skill",
+      "tool": "lock-pick",
+      "difficulty": 2,
+      "diff_modifier": 0,
+      "won_scene": "chapter_3_easy_inside_vault"
+    }
+  },
+  {
+    "label": "chapter_3_easy_inside_vault",
+    "description": "After passing through the first door, I stood in front of the vault door. Only a bomb could take care of this.",
+    "is_objective": true,
+    "auto_command": {
+      "result": {
+        "type": "trigger_challenge"
+      }
+    },
+    "challenge": {
+      "type": "skill",
+      "description": "I tried to break open the vault door.",
+      "target": "metal door",
+      "target_number": 3,
+      "stat": "skill",
+      "tool": "bomb",
+      "difficulty": 2,
+      "diff_modifier": 1,
+      "won_scene": "chapter_3_easy_money"
+    }
+  },
+  {
+    "label": "chapter_3_easy_money",
+    "description": "I got into the vault.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "The vault was big and fancy. I already knew which store had the jewel inside, it was only a matter or taking it and leaving with enough money to hide until the next big heist. I could see the hole from the last heist from my position, I needed to take enough money before the guards caught me and flee through there."
+        }
+      },
+      {
+        "command": "steal",
+        "keyword": "jewel",
+        "if": {
+          "key": "vault_actions",
+          "value": 5,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_3_capture"
+          }
+        },
+        "result": {
+          "save": "vault_actions",
+          "type": "switch_scene",
+          "scene_label": "chapter_3_easy_jewel"
+        }
+      },
+      {
+        "command": "take",
+        "keyword": "money",
+        "if": {
+          "key": "vault_actions",
+          "value": 5,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_3_capture"
+          }
+        },
+        "result": {
+          "save": "vault_actions",
+          "type": "describe",
+          "description": "I opened a bunch of smaller vaults and took as much money as I could. \nGained 1 money."
+        }
+      },
+      {
+        "command": "flee",
+        "keyword": "",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_easy_flee"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_3_easy_jewel",
+    "description": "I opened the small vault containing the Crimson Jewel. It was a beautiful red diamond, no wonder so many people wanted to get a hold of it. I stashed it in my bag and returned to the vault.",
+    "is_objective": true,
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_3_easy_money"
+      }
+    }
+  },
+  {
+    "label": "chapter_3_easy_flee",
+    "description": "With all I needed in my bag, I quickly left the vault and took a sharp turn towards the hole in the wall from the last heist. The guard were still knocked out, making my escape easy.",
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_3_success"
+      }
+    }
+  }
+]
