@@ -3,6 +3,9 @@ state_changers = {
     "TO_SCENE": "go_to_scene",
     "INCREASE_STAT": "increase_stat",
     "ADD_TOOL": "add_tool",
+    "INCREASE_STAT_AND_SWITCH": "increase_stat_and_switch",
+    "ADD_TOOL_AND_SWITCH": "add_tool_and_switch",
+    "ADD_TOOL_AND_STAT_AND_SWITCH": "add_tool_and_stat_and_switch",
     "LOSE": "lose",
 }
 
@@ -12,6 +15,9 @@ command_results = {
     "TRIGGER_CHALLENGE": "trigger_challenge",
     "INCREASE_STAT": "increase_stat",
     "ADD_TOOL": "add_tool",
+    "INCREASE_STAT_AND_SWITCH": "increase_stat_and_switch",
+    "ADD_TOOL_AND_SWITCH": "add_tool_and_switch",
+    "ADD_TOOL_AND_STAT_AND_SWITCH": "add_tool_and_stat_and_switch",
     "LOSE": "lose",
 }
 
@@ -32,4 +38,5 @@ modifiers = {
     "LOCKPICK": "lock-pick",
     "BOMB": "bomb",
     "ROPE": "rope",
+    "DOCUMENTS": "documents",
 }

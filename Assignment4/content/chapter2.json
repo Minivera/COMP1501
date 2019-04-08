@@ -1,0 +1,156 @@
+[
+  {
+    "label": "chapter_2_start",
+    "description": "Henry: \"So the job is quite simple, you have to sneak into the Royal Oak bank and steal a very specific jewel. You can leave with anything you want once in there\"",
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_2_questions"
+      }
+    }
+  },
+  {
+    "label": "chapter_2_questions",
+    "description": "I had a lot of questions for Henry",
+    "commands": [
+      {
+        "command": "ask",
+        "keyword": "job",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"Can you describe the job in more details?\"",
+            "Henry: \"So you know about the royal oak bank? It's that newly built bank on the east side of town. They had a robbery last week, but they managed to get the robers before they stole anything. Turns out, however, that they managed to get the word out that the Crimson Jewel is stored in the vault! My client wants it.\""
+          ]
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "robers",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"You mentioned some robers?\"",
+            "Henry: \"Yeah, they were a bunch of nobodies, nothing around your level. They got in during the night and blew up the basement wall to escape, but got caught a few block later as they left the sewers.\"",
+            "You: \"Still impressed they got in\"",
+            "Henry: \"Don't be, the bank's security was horrendous. They've since fixed it, but it nothing you can't handle.\""
+          ]
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "security",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"What about the security?\"",
+            "Henry: \"They've increased it quite a bit since the last robbery, but their customers are not liking it, so they're reducing the amount of armed guards during the day.\"",
+            "You: \"So you suggest going in in broad daylight?\"",
+            "Henry: \"Exactly, the thing is a fortress during the night, but it's an open door during the day. As long as you can sneak in, you'll be fine.\""
+          ]
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "jewel",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"What is the Crimson Jewel?\"",
+            "Henry: \"You don't know? It's one of the most sought after Jewel in the world. A red Diamond. Anyway, I have this client who was looking to buy it, but the owner won't sell. I guess he got bored of asking.\""
+          ]
+        }
+      },
+      {
+        "command": "accept",
+        "keyword": "",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_job_accepted"
+        }
+      },
+      {
+        "command": "refuse",
+        "keyword": "",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_job_refused"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_2_job_refused",
+    "description": "Refusing that job would have meant I wouldn't be in prison right now",
+    "auto_command": {
+      "result": {
+        "type": "lose"
+      }
+    }
+  },
+  {
+    "label": "chapter_2_job_accepted",
+    "description": "I ended up accepting the job. Henry told me he already arranged everything for the team and training. I only had to leave y apartment and go to his place.",
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_2_meet"
+      }
+    }
+  },
+  {
+    "label": "chapter_2_meet",
+    "description": [
+      "After I left my apartment, I went to Henry's place. Henry lived in this giant warehouse, he had a small apartment where the offices would usually be. He ran all the operation for our little business from the warehouse itself.",
+      "As I got in, I greeted Henry and looked around. He had prepared a lot of equipment and three potential team members.",
+      "Henry: \"Hey! Glad you accepted the job. As you can see, I prepared all I could in the time I had. The best time for the heist is tomorrow, they'll be switching the guards, so you have the day to prepare.\""
+    ],
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_2_choice"
+      }
+    }
+  },
+  {
+    "label": "chapter_2_choice",
+    "description": "I had the day to prepare, I had to at least train a little and recruit a team member.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "The warehouse was full of stuff to look at. What caught my eyes were the three candidates waiting for me to introduce myself and the training room and equipment room."
+        }
+      },
+      {
+        "command": "go",
+        "keyword": "train",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_train"
+        }
+      },
+      {
+        "command": "go",
+        "keyword": "team",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_team"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_2_end",
+    "description": "The day came to an end, whether or not I felt ready, tomorrow was the heist and I had to make it happen.",
+    "is_objective": true,
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_3_start"
+      }
+    }
+  }
+]

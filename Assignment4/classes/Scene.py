@@ -7,11 +7,12 @@ class Scene:
     state_description = "description"
     state_challenge = "challenge"
 
-    def __init__(self, scene, character, ran_commands):
+    def __init__(self, scene, character, ran_commands, saved_values):
         self.scene = copy.deepcopy(scene)
         self.character = character
         self.challenge = None
         self.ran_commands = ran_commands
+        self.saved_values = saved_values
         if "challenge" in scene:
             self.challenge = Challenge(scene["challenge"], character)
         self.state = self.state_description
@@ -23,7 +24,12 @@ class Scene:
             return
 
         # Otherwise, print the scene description
-        print(self.scene["description"])
+        if isinstance(self.scene["description"], list):
+            for description in self.scene["description"]:
+                print(description)
+                input("Press any key to continue...\n")
+        else:
+            print(self.scene["description"])
         return
 
     def request_commands(self):
@@ -63,6 +69,9 @@ class Scene:
 
     def process_command(self, command):
         command_result = command["result"]
+        changer = state_changers["CONTINUE"]
+        values = None
+        is_objective = False
 
         # Check if that command was already run and we have another command to run
         if "command" in command and "{}_{}_{}".format(self.scene["label"], command["command"], command["keyword"])\
@@ -70,48 +79,115 @@ class Scene:
             # change the command result for the replay command
             command_result = command["replay_result"]
 
+        if "if" in command:
+            if command["if"]["key"] in self.saved_values and\
+                    command["if"]["value"] == self.saved_values[command["if"]["key"]]:
+                command_result = command["if"]["result"]
+
         # For challenge actions
         if command_result["type"] == command_results["TRIGGER_CHALLENGE"]:
             self.state = self.state_challenge
-            return state_changers["CONTINUE"], {
+            changer = state_changers["CONTINUE"]
+            values = {
                 "command": command,
-            }, False
+            }
+            is_objective = False
 
         # For describe actions
-        if command_result["type"] == command_results["DESCRIBE"]:
-            print(command_result["description"])
-            return state_changers["CONTINUE"], {
+        elif command_result["type"] == command_results["DESCRIBE"]:
+            if isinstance(command_result["description"], list):
+                for description in command_result["description"]:
+                    print(description)
+                    input("Press any key to continue...\n")
+            else:
+                print(command_result["description"])
+
+            changer = state_changers["CONTINUE"]
+            values = {
                 "command": command,
-            }, False
+            }
+            is_objective = False
 
         # For add stat action actions
-        if command_result["type"] == command_results["INCREASE_STAT"]:
+        elif command_result["type"] == command_results["INCREASE_STAT"]:
             print(command_result["description"])
-            return state_changers["INCREASE_STAT"], {
+
+            changer = state_changers["INCREASE_STAT"]
+            values = {
                 "stat": command_result["stat"],
                 "amount": command_result["increase"],
                 "command": command,
-            }, False
+            }
+            is_objective = False
 
         # For describe actions
-        if command_result["type"] == command_results["ADD_TOOL"]:
+        elif command_result["type"] == command_results["ADD_TOOL"]:
             print(command_result["description"])
-            return state_changers["ADD_TOOL"], {
+
+            changer = state_changers["ADD_TOOL"]
+            values = {
                 "tool": command_result["tool"],
                 "command": command,
-            }, False
+            }
+            is_objective = False
+
+        # For switch scene and increase stat actions
+        elif command_result["type"] == command_results["INCREASE_STAT_AND_SWITCH"]:
+            print(command_result["description"])
+
+            changer = state_changers["INCREASE_STAT_AND_SWITCH"]
+            values = {
+                "stat": command_result["stat"],
+                "amount": command_result["increase"],
+                "new_label": command_result["scene_label"],
+                "command": command,
+            }
+            is_objective = False
+
+        # For switch scene and add tool actions
+        elif command_result["type"] == command_results["ADD_TOOL_AND_SWITCH"]:
+            print(command_result["description"])
+
+            changer = state_changers["ADD_TOOL_AND_SWITCH"]
+            values = {
+                "tool": command_result["tool"],
+                "new_label": command_result["scene_label"],
+                "command": command,
+            }
+            is_objective = False
+
+        # For switch scene and add tool/stat actions
+        elif command_result["type"] == command_results["ADD_TOOL_AND_STAT_AND_SWITCH"]:
+            print(command_result["description"])
+
+            changer = state_changers["ADD_TOOL_AND_STAT_AND_SWITCH"]
+            values = {
+                "stat": command_result["stat"],
+                "amount": command_result["increase"],
+                "tool": command_result["tool"],
+                "new_label": command_result["scene_label"],
+                "command": command,
+            }
+            is_objective = False
 
         # For lose actions actions
-        if command_result["type"] == command_results["LOSE"]:
-            return state_changers["LOSE"], {
+        elif command_result["type"] == command_results["LOSE"]:
+            changer = state_changers["LOSE"]
+            values = {
                 "command": command,
-            }, False
+            }
+            is_objective = False
 
         # For scene change actions
-        if command_result["type"] == command_results["SWITCH_SCENE"]:
-            return state_changers["TO_SCENE"], {
+        elif command_result["type"] == command_results["SWITCH_SCENE"]:
+            changer = state_changers["TO_SCENE"]
+            values = {
                 "command": command,
                 "new_label": command_result["scene_label"],
-            }, "is_objective" in self.scene and self.scene["is_objective"]
+            }
+            is_objective = "is_objective" in self.scene and self.scene["is_objective"]
 
-        return state_changers["CONTINUE"], None, False
+        if "save" in command_result:
+            values["save"] = command_result["save"]
+
+        return changer, values, is_objective

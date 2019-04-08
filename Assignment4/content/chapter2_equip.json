@@ -1,0 +1,154 @@
+[
+  {
+    "label": "chapter_2_equip",
+    "description": "I faced the equipment rack and the various work tables in the room, ready to prepare some equipment",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": [
+            "On the equipment rack stood some knives and some rope that I could use for getting around some of the guards. There was also a box of lock-picks if I needed some more.",
+            "I could see a small box of explosives next to the rack. I never used explosives in my jobs, but even I had to accept that they could be more than useful to open door or walls when lock-picks wouldn't work.",
+            "Henry stood not too far from the rack, packing up some more equipment if I wanted to let him chose for me. Finally, there was a workshop where I could make some homemade rope or lock-picks if I needed more."
+          ]
+        }
+      },
+      {
+        "command": "get",
+        "keyword": "knives",
+        "if": {
+          "key": "equipped_times",
+          "value": 4,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_2_end_equip"
+          }
+        },
+        "result": {
+          "type": "add_tool_and_switch",
+          "description": "I picked up some knives from the equipment rack.",
+          "scene_label": "chapter_2_equip",
+          "tool": ["knife", "knife"],
+          "save": "equipped_times"
+        }
+      },
+      {
+        "command": "get",
+        "keyword": "rope",
+        "if": {
+          "key": "equipped_times",
+          "value": 4,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_2_end_equip"
+          }
+        },
+        "result": {
+          "type": "add_tool_and_switch",
+          "description": "I picked up some rope from the equipment rack.",
+          "scene_label": "chapter_2_equip",
+          "tool": ["rope", "rope"],
+          "save": "equipped_times"
+        }
+      },
+      {
+        "command": "get",
+        "keyword": "lock-pick",
+        "if": {
+          "key": "equipped_times",
+          "value": 4,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_2_end_equip"
+          }
+        },
+        "result": {
+          "type": "add_tool_and_switch",
+          "description": "I picked up some lock-picks from the equipment rack.",
+          "scene_label": "chapter_2_equip",
+          "tool": ["lock-pick", "lock-pick"],
+          "save": "equipped_times"
+        }
+      },
+      {
+        "command": "get",
+        "keyword": "explosives",
+        "if": {
+          "key": "equipped_times",
+          "value": 4,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_2_end_equip"
+          }
+        },
+        "result": {
+          "type": "add_tool_and_switch",
+          "description": "I picked up some bomb from the equipment rack.",
+          "scene_label": "chapter_2_equip",
+          "tool": ["bomb", "bomb"],
+          "save": "equipped_times"
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "henry",
+        "if": {
+          "key": "equipped_times",
+          "value": 4,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_2_end_equip"
+          }
+        },
+        "result": {
+          "type": "add_tool_and_switch",
+          "description": "I went to Henry for equipment, he was strangely happy to give me what he was packing.",
+          "scene_label": "chapter_2_equip",
+          "tool": ["knife", "lock-pick", "bomb"],
+          "save": "equipped_times"
+        }
+      },
+      {
+        "command": "use",
+        "keyword": "workshop",
+        "if": {
+          "key": "equipped_times",
+          "value": 4,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_2_end_equip"
+          }
+        },
+        "result": {
+          "type": "add_tool_and_switch",
+          "description": "I use the workshop to make some makeshift lock-picks and rope. They wouldn't be as good as the store bought ones, but they would more easily hidden.",
+          "scene_label": "chapter_2_equip",
+          "tool": ["lock-pick", "lock-pick", "rope"],
+          "save": "equipped_times"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_2_end_equip",
+    "description": "I had wasted enough time getting equipment and returned to the warehouse to finish my preparations",
+    "is_objective": true,
+    "auto_command": {
+      "if": {
+        "key": "has_team",
+        "value": 1,
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_end"
+        }
+      },
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_2_team",
+        "save": "has_prepared"
+      }
+    }
+  }
+]

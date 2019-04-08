@@ -17,6 +17,7 @@ class Character:
             modifiers["KNIFE"]: 0,
             modifiers["BOMB"]: 0,
             modifiers["ROPE"]: 0,
+            modifiers["DOCUMENTS"]: 0,
         }
 
     def increase_stat(self, stat_name, stat_value):

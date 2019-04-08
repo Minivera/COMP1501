@@ -1,0 +1,299 @@
+[
+
+  {
+    "label": "start",
+    "description": "I woke up in my apartment as usual. I was a pretty rainy day, the kind where I'd prefer to stay in bed rather than wake up. Sadly the reason I woke up was the phone in my living room. I rarely got any phone calls, so this one was sure to be important.",
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_1_phone_call"
+      }
+    }
+  },
+  {
+    "label": "chapter_1_phone_call",
+    "description": "I stood in my room, it was a mess, but a clean one. I could always find what I looked for in an instant.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "My room included my bed and my office desk. I wasn't a big reader so my bookshelf was mostly empty. On my office desk was my computer and my phone as well as some notebooks. From my room, I could go to the living room where I could relax if I decided to ignore that phone call."
+        }
+      },
+      {
+        "command": "check",
+        "keyword": "computer",
+        "result": {
+          "type": "describe",
+          "description": "My computer, it was a pretty nice IBM PC sporting Windows 3.1. I didn't use it that much, but its internet features really helped me with my line of work."
+        }
+      },
+      {
+        "command": "use",
+        "keyword": "computer",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_1_computer_use"
+        }
+      },
+      {
+        "command": "check",
+        "keyword": "phone",
+        "result": {
+          "type": "describe",
+          "description": "My old looking phone stood next to my computer, it was ringing, waiting for me to answer."
+        }
+      },
+      {
+        "command": "answer",
+        "keyword": "phone",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_1_get_job"
+        }
+      },
+      {
+        "command": "go",
+        "keyword": "living room",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_1_living_room"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_1_computer_use",
+    "description": "Contrary to my room, I was really good at making sure my computer was clean and usable. All my apps were in specific folders for ease of access. I could always read my emails, play some solitaire or check the internet on that computer.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "My computer included many apps for the various jobs I had to do in my line of work. The big apps I was using lately were Microsoft Mail, Mosaic and the solitaire app."
+        }
+      },
+      {
+        "command": "play",
+        "keyword": "solitaire",
+        "result": {
+          "description": "I played many games of solitaire that morning, enough to win one at least.",
+          "type": "increase_stat",
+          "stat": "smart",
+          "increase": 1
+        },
+        "replay_result": {
+          "type": "describe",
+          "description": "I was done with solitaire, you can only lose so much you know."
+        }
+      },
+      {
+        "command": "read",
+        "keyword": "email",
+        "result": {
+          "type": "describe",
+          "description": "I had one unread email waiting. I was really adamant on keeping my unread email count to 0, so I opened it immediately. It was from Henry, apparently he found a good job offer. That was probably what that phone call was about."
+        }
+      },
+      {
+        "command": "check",
+        "keyword": "internet",
+        "result": {
+          "type": "describe",
+          "description": "I installed Mosaic a few month ago, seemed like such a good idea at the time. However, turns out this internet thing is still pretty barren and I ended up only using it for IMDB searches."
+        }
+      },
+      {
+        "command": "go",
+        "keyword": "back",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_1_room"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_1_room",
+    "description": "I was back in my room, the phone had stopped ringing which made the room that much quieter.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "My room included my bed and my office desk. I wasn't a big reader so my bookshelf was mostly empty. On my office desk was my computer and my phone as well as some notebooks. From my room, I could go to the living room where I could relax if I decided to ignore that phone call."
+        }
+      },
+      {
+        "command": "check",
+        "keyword": "computer",
+        "result": {
+          "type": "describe",
+          "description": "My computer, it was a pretty nice IBM PC sporting Windows 3.1. I didn't use it that much, but its internet features really helped me with my line of work."
+        }
+      },
+      {
+        "command": "use",
+        "keyword": "computer",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_1_computer_use"
+        }
+      },
+      {
+        "command": "check",
+        "keyword": "phone",
+        "result": {
+          "type": "describe",
+          "description": "My old looking phone stood next to my computer, I had one voice message waiting."
+        }
+      },
+      {
+        "command": "listen",
+        "keyword": "voice message",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_1_get_job_waited"
+        }
+      },
+      {
+        "command": "go",
+        "keyword": "living room",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_1_living_room"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_1_living_room",
+    "description": "My living room was small and empty, I rarely receive anyone over to my home and I was away for most of the day. Still, I could still smell yesterday's meal, probably because I never took the garbage out.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "In my living room stood a few pieces of furniture. An old couch faced the TV, which had been broken for days Next to the couch, there was the only bookshelf with books in it, I had so many books I still had to read. The room had two doors, one to my room and one to the kitchen."
+        }
+      },
+      {
+        "command": "check",
+        "keyword": "bookshelf",
+        "result": {
+          "type": "describe",
+          "description": "The bookshelf contained only one row with books in it, of which I had read only one to completion. Nothing was stopping me from reading one of them right now."
+        }
+      },
+      {
+        "command": "read",
+        "keyword": "book",
+        "result": {
+          "description": "I had a geography book my mother gave me when I was little that only had a few pages left before being completed. Even though the last time I read it was 6 years ago, I decided to finish it.",
+          "type": "increase_stat",
+          "stat": "smart",
+          "increase": 1
+        },
+        "replay_result": {
+          "type": "describe",
+          "description": "No more reading for me that day"
+        }
+      },
+      {
+        "command": "go",
+        "keyword": "room",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_1_room"
+        }
+      },
+      {
+        "command": "go",
+        "keyword": "kitchen",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_1_kitchen"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_1_kitchen",
+    "description": "The kitchen served as both a kitchen and a dining room, though the dining table could barely fit two people.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "The kitchen had the necessary cooking equipment, including a bunch of knife, not all of which were used for cooking unfortunately. From the kitchen I could leave the apartment or go back to the living room."
+        }
+      },
+      {
+        "command": "take",
+        "keyword": "knife",
+        "result": {
+          "description": "Nothing stopped me from stocking up on a few knives, I often needed them in my line of work. I took one of the dirty one, I never used them for cooking after all.",
+          "type": "add_tool",
+          "tool": "knife"
+        },
+        "replay_result": {
+          "type": "describe",
+          "description": "I was pretty sure I wouldn't need more than one knife from my kitchen."
+        }
+      },
+      {
+        "command": "go",
+        "keyword": "living room",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_1_living_room"
+        }
+      },
+      {
+        "command": "leave",
+        "keyword": "",
+        "result": {
+          "type": "describe",
+          "description": "Looking at the front door of my apartment, I remembered I still had to take that phone call, leaving now was not an option."
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_1_get_job",
+    "description": [
+      "I picked up the phone and immediately heard a familiar voice, it was Henry.",
+      "Henry: \"Hey man, how is it going?\"",
+      "You: \"I was doing better before you woke me up with your phone call... What do you want?\"",
+      "Henry: \"Don't be like that! I've got a job for you\"",
+      "You: \"Go on...\""
+    ],
+    "is_objective": true,
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_2_start"
+      }
+    }
+  },
+  {
+    "label": "chapter_1_get_job_waited",
+    "description": [
+      "I pressed the button of my voicemail machine to listen to the latest voice message. The voice of Henry greeted me with an annoyed tone.",
+      "Henry: \"Hey man, still as hard to reach as ever I see. In any case, call me back, I've got a job for you. You know my number.\""
+    ],
+    "is_objective": true,
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_2_start"
+      }
+    }
+  }
+]

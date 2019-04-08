@@ -1,0 +1,127 @@
+[
+  {
+    "label": "chapter_2_train",
+    "description": "I went into the training room, ready to get myself into shape before tomorrow.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "The training room had a lot of equipment to help me prepare for any heists I had to complete. It included equipment to flex my muscles, a bookshelf with some books, a door to practice lock-picking, a TV and a target for knife throwing practice."
+        }
+      },
+      {
+        "command": "flex",
+        "keyword": "muscles",
+        "if": {
+          "key": "trained_times",
+          "value": 2,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_2_end_training"
+          }
+        },
+        "result": {
+          "type": "increase_stat_and_switch",
+          "description": "I used the equipment in the room to flex my muscles a little.",
+          "scene_label": "chapter_2_train",
+          "stat": "brawn",
+          "increase": 2,
+          "save": "trained_times"
+        }
+      },
+      {
+        "command": "read",
+        "keyword": "books",
+        "if": {
+          "key": "trained_times",
+          "value": 2,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_2_end_training"
+          }
+        },
+        "result": {
+          "type": "increase_stat_and_switch",
+          "description": "I looked up one of the books in Henry's bookshelf and read on various subjects. We never know when that can come in handy.",
+          "scene_label": "chapter_2_train",
+          "stat": "smart",
+          "increase": 2,
+          "save": "trained_times"
+        }
+      },
+      {
+        "command": "train",
+        "keyword": "lock-pick",
+        "if": {
+          "key": "trained_times",
+          "value": 2,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_2_end_training"
+          }
+        },
+        "result": {
+          "type": "increase_stat_and_switch",
+          "description": "I tried various types of lock-picks against the fake door to practice, I felt like I could open a vault with only these.",
+          "scene_label": "chapter_2_train",
+          "stat": "skill",
+          "increase": 2,
+          "save": "trained_times"
+        }
+      },
+      {
+        "command": "watch",
+        "keyword": "tv",
+        "if": {
+          "key": "trained_times",
+          "value": 2,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_2_end_training"
+          }
+        },
+        "result": {
+          "type": "increase_stat_and_switch",
+          "description": "I relaxed a little in front of the TV, watching a cooking show. Strangely enough, I felt like it really helped me for the heist.",
+          "scene_label": "chapter_2_train",
+          "stat": ["skill", "smart"],
+          "increase": 1,
+          "save": "trained_times"
+        }
+      },
+      {
+        "command": "practice",
+        "keyword": "knife",
+        "if": {
+          "key": "trained_times",
+          "value": 2,
+          "result": {
+            "type": "switch_scene",
+            "scene_label": "chapter_2_end_training"
+          }
+        },
+        "result": {
+          "type": "increase_stat_and_switch",
+          "description": "I started throwing knives at the target, trying to train both my muscles and my throwing skill to great effect.",
+          "scene_label": "chapter_2_train",
+          "stat": ["skill", "brawn"],
+          "increase": 1,
+          "save": "trained_times"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_2_end_training",
+    "description": "I had pretty much fried my brain and muscles training, I knew I couldn't do more today. Looking at the room, it moved towards the equipment rack to get a little more prepared.",
+    "is_objective": true,
+    "auto_command": {
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_2_equip"
+      }
+    }
+  }
+]

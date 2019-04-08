@@ -1,0 +1,60 @@
+[
+  {
+    "label": "chapter_3_start",
+    "description": "On the morning of the heist, I approached the bank by myself, dressed in work clothes. Henry had suggested I try to infiltrate as a janitor and gave me the required papers. I ended up not bringing my teammate along, they were more useful as support than in person.",
+    "auto_command": {
+      "result": {
+        "type": "add_tool_and_switch",
+        "tool": ["documents", "documents", "documents"],
+        "scene_label": "chapter_3_bank"
+      }
+    }
+  },
+  {
+    "label": "chapter_3_bank",
+    "description": "The bank stood in front of me, I only had to make my choice",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": [
+            "The bank was not that big, it was stuck in between multiple building and had to be smart about its space. What it lacked in space however, it made up in opulence. The front facade was built of pure marble and had some metal workings dotted around. The front door was of the newer kind, it even opened automatically as you approached!",
+            "I could enter the bank from the front or approach it from the side, there was a small access area on its right side for employees to use. I could see garbage piling up near the service door, it's likely they wouldn't mind a janitor near that trash."
+          ]
+        }
+      },
+      {
+        "command": "enter",
+        "keyword": "front",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_front"
+        }
+      },
+      {
+        "command": "explore",
+        "keyword": "side",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_3_side"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_3_front",
+    "description": "I entered the bank through the front door, people didn't seem to mind my presence.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "The bank was mostly made up of a very fancy waiting room and some counters. The only access into the bank itself was through the service door next to the counters. Most employee probably used the side dor to get in. My two options were to make a scene or try and infiltrate"
+        }
+      }
+    ]
+  }
+]

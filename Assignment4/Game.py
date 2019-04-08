@@ -17,9 +17,14 @@ class Game:
         self.state = self.STATE_NONE
         self.objectives_completed = 0
         self.ran_commands = {}
+        self.saved_values = {}
         self.character = None
         self.scenes = scenes
-        self.current_scene = Scene(scenes[0], self.character, self.ran_commands)
+        self.current_scene = Scene(scenes[0], self.character, self.ran_commands, self.saved_values)
+        # Try to load the "start" scene rather than the first one
+        for scene in self.scenes:
+            if scene["label"] == "chapter_2_start":
+                self.current_scene = Scene(scene, self.character, self.ran_commands, self.saved_values)
 
     def start(self):
         self.state = self.STATE_MENU
@@ -126,15 +131,85 @@ class Game:
         if value is not None and "lower_tool" in value:
             self.character.remove_tool(value["lower_tool"])
 
+        if value is not None and "save" in value:
+            self.saved_values[value["save"]] = self.saved_values[value["save"]] + 1 if value["save"] \
+                                                                                       in self.saved_values else 1
+
         # Execute the state change
+        # Simple scene changer
         if changer == state_changers["TO_SCENE"]:
             for scene in self.scenes:
                 if scene["label"] == value["new_label"]:
-                    self.current_scene = Scene(scene, self.character, self.ran_commands)
+                    self.current_scene = Scene(scene, self.character, self.ran_commands, self.saved_values)
+        # Increase a stat
         elif changer == state_changers["INCREASE_STAT"]:
-            self.character.increase_stat(value["stat"], value["amount"])
+            if isinstance(value["stat"], list):
+                for val in value["stat"]:
+                    self.character.increase_stat(val, value["amount"])
+                    print("Increased {} by {}!".format(val, value["amount"]))
+            else:
+                self.character.increase_stat(value["stat"], value["amount"])
+                print("Increased {} by {}!".format(value["stat"], value["amount"]))
+        # Add a new tool to inventory
         elif changer == state_changers["ADD_TOOL"]:
-            self.character.add_tool(value["tool"])
+            if isinstance(value["tool"], list):
+                for val in value["tool"]:
+                    self.character.add_tool(val)
+                    print("Picked up 1 {}!".format(val))
+            else:
+                self.character.add_tool(value["tool"])
+                print("Picked up 1 {}!".format(value["tool"]))
+        # Increase a stat and change scene
+        elif changer == state_changers["INCREASE_STAT_AND_SWITCH"]:
+            # Start by increasing the stat
+            if isinstance(value["stat"], list):
+                for val in value["stat"]:
+                    self.character.increase_stat(val, value["amount"])
+                    print("Increased {} by {}!".format(val, value["amount"]))
+            else:
+                self.character.increase_stat(value["stat"], value["amount"])
+                print("Increased {} by {}!".format(value["stat"], value["amount"]))
+            # Then switch scene
+            for scene in self.scenes:
+                if scene["label"] == value["new_label"]:
+                    self.current_scene = Scene(scene, self.character, self.ran_commands, self.saved_values)
+        # Add a new tool to inventory and change scene
+        elif changer == state_changers["ADD_TOOL_AND_SWITCH"]:
+            # Start by adding the tool
+            if isinstance(value["tool"], list):
+                for val in value["tool"]:
+                    self.character.add_tool(val)
+                    print("Picked up 1 {}!".format(val))
+            else:
+                self.character.add_tool(value["tool"])
+                print("Picked up 1 {}!".format(value["tool"]))
+            # Then switch scene
+            for scene in self.scenes:
+                if scene["label"] == value["new_label"]:
+                    self.current_scene = Scene(scene, self.character, self.ran_commands, self.saved_values)
+        # Add a new tool to inventory, increase a stat and change scene
+        elif changer == state_changers["ADD_TOOL_AND_STAT_AND_SWITCH"]:
+            # Start by adding the tool
+            if isinstance(value["tool"], list):
+                for val in value["tool"]:
+                    self.character.add_tool(val)
+                    print("Picked up 1 {}!".format(val))
+            else:
+                self.character.add_tool(value["tool"])
+                print("Picked up 1 {}!".format(value["tool"]))
+            # Then increase the stat
+            if isinstance(value["stat"], list):
+                for val in value["stat"]:
+                    self.character.increase_stat(val, value["amount"])
+                    print("Increased {} by {}!".format(val, value["amount"]))
+            else:
+                self.character.increase_stat(value["stat"], value["amount"])
+                print("Increased {} by {}!".format(value["stat"], value["amount"]))
+            # Then switch scene
+            for scene in self.scenes:
+                if scene["label"] == value["new_label"]:
+                    self.current_scene = Scene(scene, self.character, self.ran_commands, self.saved_values)
+        # Lose the game
         elif changer == state_changers["LOSE"]:
             # TODO: Improve this message
             print("You lose\n")

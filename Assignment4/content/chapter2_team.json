@@ -1,0 +1,321 @@
+[
+  {
+    "label": "chapter_2_team",
+    "description": "Henry had assembled three potential teammates for the heist, they were waiting in the \"living room\" part of the warehouse",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": [
+            "As I looked around the room and faced the three candidates, Henry introduced me to each of them in order.",
+            "First was Boris, a very tall and burly man with many scars on his face. Henry told me he was less of the sneaky type and more of the explosive type. While I was reluctant to let such a man in my team, I remembered that those where the qualities I was missing.",
+            "Second was Stan, a nerdy \"guy in the chair\" would could help coordinate my moves and help me plan ahead. He wouldn't be that useful in the bank itself, but having a smart guy watch my back would always make me feel more at ease.",
+            "Last was Anna, a weaponsmith and overall jack of all trade. If I wanted more equipment and insurance that nothing would break on the field, she was the person to look for. Unfortunately, she had less experience that the other two, so taking her in was a gamble."
+          ]
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "boris",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_boris"
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "stan",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_stan"
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "anna",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_anna"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_2_boris",
+    "description": "Boris really was the imposing type, yet, I approached him, ready so ask questions.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "There were three things I could ask boris; his opinion of the heist, if he had any suggestions and what was his speciality."
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "opinion",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"So, what's your thought on the heist?\"",
+            "Boris: \"Very risky\"",
+            "You: \"... Anything else?\"",
+            "Boris: \"No\"",
+            "You: \"Right...\""
+          ]
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "suggestions",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"Anything to suggest before I go in?\"",
+            "Boris: \"Bring more bombs\"",
+            "You: \"Hum... Sure... Why should I?\"",
+            "Boris: \"It creates paths\"",
+            "You: \"Right...\""
+          ]
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "speciality",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"What's your speciality? Why should I hire you?\"",
+            "Boris: \"I'm strong\"",
+            "You: \"Right, but I need something more than just muscles you know? Any hobby or thing I should know?\"",
+            "Boris: \"We enter from the front door, I take care of the security, you open the vault. Best plan possible.\"",
+            "You: \"Right...\""
+          ]
+        }
+      },
+      {
+        "command": "reconsider",
+        "keyword": "",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_team"
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "join",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_chosen_boris"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_2_stan",
+    "description": "Stan was extremely friendly and liked to talk, maybe too much, but I had to ask him questions.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "There were three things I could ask stan; his opinion of the heist, if he had any suggestions and what was his speciality."
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "opinion",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"So, what's your thought on the heist?\"",
+            "Stan: \"On the surface, it seems very risky to barge in in broad daylight and hope to get in, but I think it offers an opportunity for a very smart plan.\"",
+            "You: \"True, I'm very interested in this whole sewers business.\"",
+            "Stan: \"I agree! You might be able to find a sewer entrance? It's likely to be heavily guarded, but then you're in without resistance. Similarity, fleeing through there might be an option if the alarm isn't triggered. In fact, looking at the map, I can see a pattern of...\"",
+            "You: \"Let's change the subject...\""
+          ]
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "suggestions",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"Anything to suggest before I go in?\"",
+            "Stan: \"I think the best course of action is to get in from the side, there is a door for employees that was broken during the last failed heist and I heard it hasn't been repaired yet.\"",
+            "You: \"Really, how did you know about that?\"",
+            "Stan: \"Well you see, there is this new surveillance system in the bank... Well, it has this big flaw where you can take a connector and...\"",
+            "You: \"I shouldn't have asked...\""
+          ]
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "speciality",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"What's your speciality? Why should I hire you?\"",
+            "Stan: \"I'm not that great on the field, but I'm very smart and extremely talented with the latest technologies. If you need a rock solid plan, I'm your man!\"",
+            "You: \"How do you suggest we communicate in the field if I can't bring you with me?\"",
+            "Stan: \"I have exactly the solution for that! I took the last few years to modify a short wave radio and make those small communication devices that can't be picked up by normal equipment...\"",
+            "You: \"I think I have a good picture now...\""
+          ]
+        }
+      },
+      {
+        "command": "reconsider",
+        "keyword": "",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_team"
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "join",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_chosen_stan"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_2_anna",
+    "description": "I had my reserves about Anna, but she did look very competent at first glance. Her answers would convince me to take her in or not.",
+    "commands": [
+      {
+        "command": "look",
+        "keyword": "around",
+        "result": {
+          "type": "describe",
+          "description": "There were three things I could ask Anna; her opinion of the heist, if she had any suggestions and what was her speciality."
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "opinion",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"So, what's your thought on the heist?\"",
+            "Anna: \"The fact that the last robbers failed tells us a lot about security and how to work around it. I think this heist will turn out easy.\"",
+            "You: \"That's a bold claim, I would have considered it really risky.\"",
+            "Anna: \"It would look like so on the surface, but an enemy that on high alert is one you can manipulate. They think their security is perfect now that they have improved it, but it has made them unable to react to unforeseen circumstances. We can use this to our advantage.\"",
+            "You: \"Fair point\""
+          ]
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "suggestions",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"Anything to suggest before I go in?\"",
+            "Anna: \"The bank is sure to have increase the security near the vault, but they haven't fixed the hole from the last heist yet. We should ge in from there, lure the guards away and infiltrate the bank where they least expect it.\"",
+            "You: \"You mean attack where they expect it the most? Too risky.\"",
+            "Anna: \"I call it hiding in plain sight, all you need to do is find the entrance to the sewers near the bank. I have heard about an old forgotten entrance that was used by the building before the bank, if you can find it, you'll be right under their noses.\"",
+            "You: \"It might just work\""
+          ]
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "speciality",
+        "result": {
+          "type": "describe",
+          "description": [
+            "You: \"What's your speciality? Why should I hire you?\"",
+            "Anna: \"I'm smarter than anyone else and I can supply you with far better equipment than what you could found in this warehouse.\"",
+            "You: \"How about on the field, are you willing to accompany me?\"",
+            "Anna: \"I think we both know you intend to go in alone, so I don't see the point of answering this question.\"",
+            "You: \"Hm...\""
+          ]
+        }
+      },
+      {
+        "command": "reconsider",
+        "keyword": "",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_team"
+        }
+      },
+      {
+        "command": "ask",
+        "keyword": "join",
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_chosen_anna"
+        }
+      }
+    ]
+  },
+  {
+    "label": "chapter_2_chosen_boris",
+    "description": "I ended up choosing Boris, his strength could be very useful for me. He gave me a very small smile and then dragged me to the training room for some more physical training... I started to regret my decision.",
+    "auto_command": {
+      "result": {
+        "type": "increase_stat_and_switch",
+        "description": "Boris: \"Let's train\"",
+        "stat": "brawn",
+        "increase": 3,
+        "scene_label": "chapter_2_end_team"
+      }
+    }
+  },
+  {
+    "label": "chapter_2_chosen_stan",
+    "description": "I ended up choosing Stan, his brain and planning ability where all I wanted from a partner. We ended up discussing the plan all night, though I couldn't barely say a word during all that time.",
+    "auto_command": {
+      "result": {
+        "type": "increase_stat_and_switch",
+        "description": "Stan: \"I can't wait to work with you boss!\"",
+        "stat": "smart",
+        "increase": 3,
+        "scene_label": "chapter_2_end_team"
+      }
+    }
+  },
+  {
+    "label": "chapter_2_chosen_anna",
+    "description": "I ended up choosing Anna, it was a bold choice, but I knew it was the right one. We planned for a few hours before doing a scout run of the bank. She clearly knew her stuff and never made me regret my decision.",
+    "auto_command": {
+      "result": {
+        "type": "add_tool_and_stat_and_switch",
+        "description": "Anna: \"You made the right choice.\"",
+        "stat": "skill",
+        "increase": 2,
+        "tool": ["bomb", "rope"],
+        "scene_label": "chapter_2_end_team"
+      }
+    }
+  },
+  {
+    "label": "chapter_2_end_team",
+    "description": "I discussed things with my teammate and returned to the workshop for the next step.",
+    "is_objective": true,
+    "auto_command": {
+      "if": {
+        "key": "has_prepared",
+        "value": 1,
+        "result": {
+          "type": "switch_scene",
+          "scene_label": "chapter_2_end"
+        }
+      },
+      "result": {
+        "type": "switch_scene",
+        "scene_label": "chapter_2_train",
+        "save": "has_team"
+      }
+    }
+  }
+]
